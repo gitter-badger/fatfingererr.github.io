@@ -1,0 +1,75 @@
+==================================================================
+https://keybase.io/fatfingererr
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://www.ffe.tw
+  * I am fatfingererr (https://keybase.io/fatfingererr) on keybase.
+  * I have a public key with fingerprint 5F03 3B55 1EF4 D27A 36D5  AA39 F013 CD96 337A 1E28
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "01204175f046da83f5eb4d1055263268c5ca5e0f0263ffe06c88a5427387653aa0b70a",
+            "fingerprint": "5f033b551ef4d27a36d5aa39f013cd96337a1e28",
+            "host": "keybase.io",
+            "key_id": "f013cd96337a1e28",
+            "kid": "01013971c1fb6738c27221ae27357922548679396501c41ab76ee96514664be0d2ce0a",
+            "uid": "e21ab96eedd2682ba22642b1398d2319",
+            "username": "fatfingererr"
+        },
+        "service": {
+            "hostname": "www.ffe.tw",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1477757525,
+    "expire_in": 157680000,
+    "prev": "3784e39e6c459c178ff7dbad20c8d87e2c2363023ca2645003a247278e5ddc15",
+    "seqno": 15,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.0.58
+Comment: https://keybase.io/crypto
+
+yMNtAnicbZJ/UBRlHMYPAkyMRMEUFYJVGJKbY/fdfffdgzBBy5gmtFRKEm/2x7uw
+Snfn3QEiCVFQF2lBRQyT/TIZnFGqqZGEYATnGhwVZIRKEYyTlJgzfoRYBNP0Lul/
+7T873/d9ns/7PO+8npAHDMF+E2FdH7IHouL9LnTU5RteDD+/o5iSbEoRlVRM7cXz
+P5ynYKfLsldTqCSKZgDNMQiqNMcrosCqEEucwtAQAp4FvCBDWYSYVmkyqiqmeVkQ
+RMgBxAqIh6wo0hKiRcpIqZo1BzvsDs3qIljCY1kJQgarnAKQyPIKFEXWrNIMKytm
+nmWRyGAgEGOuzak7SDhJdGKTZiNrZLDMx/sf/f3cZMeMGJlRJZ6EkQECgBExCQaR
+GQDICTwys2Ye0ozMMaKEeIzJxHA8z0mYVoCM53Pnz+Mw8UpmIlEUUhpIIgA8ByRy
+hKAAljHrQid2WMWXsZ5KdP1XFzsc1EEjRXYKNBnrl6u3uacqLCw0kSszuQqJ2+6w
+uWyyLY+s57pc9iTd5iqyz+uwZLlHsEiaVSFkYijADqdms1JJDFHKLk1HMhxCCCII
+oJHC++2aA1s0XQERL9Dk04/BBQTJIoHDrBnzMgfNMoMEVUWKJCqAlgVFQBjIgOVZ
+GrCySHpCmmZFwCGABAwVRWYgpXfaZ7XpbJJTzCFMp5ZjFV35DkwdPNuxK8DgF2wI
+CvTXX5gheGHo/XdnXhpqaMvwXMKpqtD9a1P3n50+YdUb3JU6x+rykVsTrz/KDI6G
+O0N2v1W2oZ7HKVe7dhx4bbEvYuPwL++zjzd8ENTfORuVmVM3m7Im7WT00vHa1kf8
+uTcvXp6cDvD97srs9dt+InvTx+mHq3pCzpuWJGkNUY45E7XvsYChryoupmb5o63f
+j90oLohMHQ8/Ujh1LG7PnfU73b9d9x7qinnlm4EfOsXboaXPXz2z4qE9OQt5v2nT
+psFPCjePz36xfYRJzoiduPXUrieT/kj+Z2zGW+nsbTl92w1PptRe+9xSG2P1pXU0
+dxQkVDmMk2d95c0r2b7rzHOjp6i64WUXspESGC4MxtWH9X0bmRj0U3X1sWtH4Y1x
+LqJ3/7mh6bi1XwcPlDbt3Ly8raLKbjz0bFjQtkVlQntrwuXwU4d7/nqpIN09mZjn
+XrEgsOfm6bc9xiU9rTUllUWLlJ689d4TV7xe77m1/V8ufs99J7Zmrv1v78zNEXdo
+SXSje91wy/HJ3ZW2hsZX71raPPWp3ZonOGR0KpFrhe1Z1ggUk/n0kf65suj4pi3+
+P1dLKeyC7IwNFVz13bRLpTNZxoGuPtRUo/641eOOnftuXUZJ0UdTQ2c2MKUxT6RL
+ptzIPi43HaxsSQ5/Z8vxz/wTtnX4Gt2lG5vD0pcFjc0+WP7up9UPR7X3ldDtz6z2
+rulffvSFVcFF8f8C/8e73w==
+=BsLJ
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/fatfingererr
+
+==================================================================
