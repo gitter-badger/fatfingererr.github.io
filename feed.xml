@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <rss version='2.0' xmlns:atom='http://www.w3.org/2005/Atom'>
 <channel>
-<atom:link href='https://fatfingererr.github.io/cryogen-blog/resources/public/' rel='self' type='application/rss+xml'/>
+<atom:link href='fatfingererr.github.io' rel='self' type='application/rss+xml'/>
 <generator>
 clj-rss
 </generator>
@@ -9,23 +9,23 @@ clj-rss
 Fat Finger ERR!
 </title>
 <link>
-https://fatfingererr.github.io/cryogen-blog/resources/public/
+fatfingererr.github.io
 </link>
 <description>
 fatfingererr blog
 </description>
 <lastBuildDate>
-Sat, 29 Oct 2016 10:59:11 +0800
+Sat, 29 Oct 2016 11:21:38 +0800
 </lastBuildDate>
 <author>
 fatfingererr
 </author>
 <item>
 <guid>
-https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2015-01-13-using-cylon-oauth2.html
+fatfingererr.github.io/posts/2015-01-13-using-cylon-oauth2.html
 </guid>
 <link>
-https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2015-01-13-using-cylon-oauth2.html
+fatfingererr.github.io/posts/2015-01-13-using-cylon-oauth2.html
 </link>
 <title>
 Cylon Oauth2 Client and Authorization Server
@@ -85,10 +85,10 @@ fatfingererr
 </item>
 <item>
 <guid>
-https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-15-milesian-aop.html
+fatfingererr.github.io/posts/2014-12-15-milesian-aop.html
 </guid>
 <link>
-https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-15-milesian-aop.html
+fatfingererr.github.io/posts/2014-12-15-milesian-aop.html
 </link>
 <title>
 Apply AOP in stuartsierra/component
@@ -217,10 +217,10 @@ fatfingererr
 </item>
 <item>
 <guid>
-https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-12-bigbang.html
+fatfingererr.github.io/posts/2014-12-12-bigbang.html
 </guid>
 <link>
-https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-12-bigbang.html
+fatfingererr.github.io/posts/2014-12-12-bigbang.html
 </link>
 <title>
 Customizing stuartsierra/component
@@ -292,10 +292,10 @@ fatfingererr
 </item>
 <item>
 <guid>
-https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-02-cryogen-and-github.html
+fatfingererr.github.io/posts/2014-12-02-cryogen-and-github.html
 </guid>
 <link>
-https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-02-cryogen-and-github.html
+fatfingererr.github.io/posts/2014-12-02-cryogen-and-github.html
 </link>
 <title>
 cryogen in github pages 
@@ -319,10 +319,10 @@ fatfingererr
 </item>
 <item>
 <guid>
-https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-01-move-clojure.html
+fatfingererr.github.io/posts/2014-12-01-move-clojure.html
 </guid>
 <link>
-https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-01-move-clojure.html
+fatfingererr.github.io/posts/2014-12-01-move-clojure.html
 </link>
 <title>
 on the clojure move
