@@ -1,13 +1,13 @@
-tangrammer.github.com
+github.com/fatfingererr
 =====================
-this is the public repo accesible from [http://tangrammer.github.io/](http://tangrammer.github.io/)
+this is the public repo accesible from [http://www.ffe.tw/](http://www.ffe.tw/)
 
-Blog powered by cryogen is [https://github.com/tangrammer/cryogen-blog](https://github.com/tangrammer/cryogen-blog)
+Blog powered by cryogen is [https://github.com/fatfingererr/cryogen-blog](https://github.com/fatfingererr/cryogen-blog)
 
 ### Instructions to make changes
 ```
-git clone git@github.com:tangrammer/cryogen-blog.git your-blog
-git clone git@github.com:tangrammer/tangrammer.github.com.git your-blog/resources/public
+git clone git@github.com:fatfingererr/cryogen-blog.git your-blog
+git clone git@github.com:fatfingererr/fatfingererr.github.com.git your-blog/resources/public
 cd your-blog
 lein ring server
 .... edit your site to get new web version ....
