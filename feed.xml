@@ -1,0 +1,341 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss version='2.0' xmlns:atom='http://www.w3.org/2005/Atom'>
+<channel>
+<atom:link href='https://fatfingererr.github.io/cryogen-blog/resources/public/' rel='self' type='application/rss+xml'/>
+<generator>
+clj-rss
+</generator>
+<title>
+Fat Finger ERR!
+</title>
+<link>
+https://fatfingererr.github.io/cryogen-blog/resources/public/
+</link>
+<description>
+fatfingererr blog
+</description>
+<lastBuildDate>
+Sat, 29 Oct 2016 10:59:11 +0800
+</lastBuildDate>
+<author>
+fatfingererr
+</author>
+<item>
+<guid>
+https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2015-01-13-using-cylon-oauth2.html
+</guid>
+<link>
+https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2015-01-13-using-cylon-oauth2.html
+</link>
+<title>
+Cylon Oauth2 Client and Authorization Server
+</title>
+<description>
+&lt;p&gt;A couple of months before, &lt;a href='https://github.com/juxt/cylon'&gt;juxt/cylon&lt;/a&gt; added Oauth2 &lt;strong&gt;client and provider&lt;/strong&gt; functionality using a &lt;a href='https://github.com/juxt/modular'&gt;modular&lt;/a&gt; approach. This post, using an example integration &lt;a href='https://github.com/tangrammer/modular-cylon-example'&gt;project&lt;/a&gt;, tries to explain the implementation design details and the easy way to integrate Cylon Oauth2 client and provider in your component project.  &lt;/p&gt;&lt;p&gt;I'd like to clear that &lt;a href='https://github.com/tangrammer/modular-cylon-example'&gt;modular-cylon-example&lt;/a&gt; has been generated using the modular template &lt;code&gt;bootstrap-cover&lt;/code&gt; following instructions that you can find on &lt;a href='http://modularity.org/'&gt;modularity.org&lt;/a&gt;. On top of this code I only translate the minimum needed code (mostly authored by &lt;a href='https://github.com/malcolmsparks'&gt;Malcolm Sparks&lt;/a&gt;) to get working &lt;a href='https://github.com/juxt/cylon'&gt;juxt/cylon&lt;/a&gt; oauth2 functionality.   &lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;let's&amp;#95;visualise&amp;#95;our&amp;#95;component&amp;#95;system&quot;&gt;&lt;/a&gt;Let's visualise our component system&lt;/h2&gt;&lt;p&gt;Althouh I've followed closely this &lt;a href='https://tools.ietf.org/html/rfc6749'&gt;Oauth2&lt;/a&gt; implementation, I usually need to visualise the system to think or talk about it. In this case I'll use system graphs made with &lt;a href='https://github.com/ztellman/rhizome'&gt;rhizome&lt;/a&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;generate&amp;#95;your&amp;#95;bootstrap-cover&amp;#95;system&quot;&gt;&lt;/a&gt;Generate your bootstrap-cover system&lt;/h3&gt;Here you go the system result of: &lt;br /&gt;&lt;code&gt;$ lein new modular foo bootstrap-cover&lt;/code&gt; &lt;p&gt;&lt;a href='https://dl.dropboxusercontent.com/u/8688858/cylon-oauth2-example/bootstrap-cover.png'&gt;&lt;img src=&quot;https://dl.dropboxusercontent.com/u/8688858/cylon-oauth2-example/bootstrap-cover.png&quot; alt=&quot;Drawing&quot; style=&quot;width: 100%;&quot;/&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;As you can see &lt;strong&gt;bootstrap-cover&lt;/strong&gt; template, provides you with a :http-listener (&lt;a href='https://github.com/juxt/modular/blob/master/modules/http-kit/src/modular/http&amp;#95;kit.clj#L13'&gt;modular.http-kit/Webserver&lt;/a&gt;) and four webservices (&lt;a href='https://github.com/juxt/modular/blob/master/modules/bidi/src/modular/bidi.clj#L18'&gt;modular.bidi/WebService&lt;/a&gt;), all of them are instances of &lt;a href='https://github.com/juxt/modular/blob/master/modules/bidi/src/modular/bidi.clj#L49'&gt;modular.bidi/StaticResourceService&lt;/a&gt; (to provide jquery, bootstrap and public resources) except &lt;strong&gt;:bootstrap-cover-website-website&lt;/strong&gt; that makes the dynamic website responses.&lt;br /&gt; Note that although &lt;strong&gt;:modular-bidi-router-webrouter&lt;/strong&gt; implements &lt;a href='https://github.com/juxt/modular/blob/master/modules/bidi/src/modular/bidi.clj#L18'&gt;WebService&lt;/a&gt; too, is modular.ring/&lt;a href='https://github.com/juxt/modular/blob/master/modules/ring/src/modular/ring.clj#L10'&gt;WebRequestHandler&lt;/a&gt; protocol the requirement for :http-listener-listener to use it. You can find more info about modular.bidi/&lt;a href='https://github.com/juxt/modular/blob/master/modules/bidi/src/modular/bidi.clj#L129'&gt;Router&lt;/a&gt; &lt;a href='https://groups.google.com/forum/#!topic/clojure/YP&amp;#95;VM6Zf4RQ'&gt;here&lt;/a&gt;.&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;add&amp;#95;oauth2&amp;#95;components&quot;&gt;&lt;/a&gt;Add Oauth2 components&lt;/h3&gt;Then, I added the juxt/cylon components to provide Oauth2  &lt;a href='https://github.com/tangrammer/modular-cylon-example/blob/master/src/modular/cylon&amp;#95;oauth&amp;#95;example/system.clj#L277'&gt;client&lt;/a&gt; and &lt;a href='https://github.com/tangrammer/modular-cylon-example/blob/master/src/modular/cylon&amp;#95;oauth&amp;#95;example/system.clj#L143'&gt;provider&lt;/a&gt; functionality.&lt;p&gt;&lt;strong&gt;Note that this demo, trying to be simple, uses atom backed stores&lt;/strong&gt; not intended to be used in production environments (you'l loose all your persistent data each time your app restarts). You can replace that persistence implementation by any one persistence implementations you prefer (for example postgre), only you'll have to implement the required protocol.&lt;/p&gt;&lt;p&gt;You can see now last bootstrap-cover components plus 22 more :) . Don't be afraid I'll work a bit on getting clear this first diagram. Bootstrap-cover components are highlighted in yellow and oauth components specifically written in this demo project in orange (related with mailing, form rendering and atom storing).  Following this graph we can distinguish 2 servers, the new &lt;strong&gt;:authorization-server-http-listener&lt;/strong&gt; component tree that represents the Oauth provider, and the old one :http-listener-listener that has the &lt;strong&gt;:webapp-oauth-client&lt;/strong&gt; included&lt;/p&gt;&lt;p&gt;&lt;a href='https://dl.dropboxusercontent.com/u/8688858/cylon-oauth2-example/all-bis.png'&gt;&lt;img src=&quot;https://dl.dropboxusercontent.com/u/8688858/cylon-oauth2-example/all-bis.png&quot; alt=&quot;Drawing&quot; style=&quot;width: 100%;&quot;/&gt;&lt;/a&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;let's&amp;#95;focus&amp;#95;on&amp;#95;oauth2&quot;&gt;&lt;/a&gt;Let's focus on Oauth2&lt;/h3&gt;As I suspect that you're thinking now that OAuth2 is really complex now :), let's split a bit this complex diagram to reach the simplicity of OAuth2 specification&lt;h4&gt;&lt;a name=&quot;cylon&amp;#95;persistence:&amp;#95;&amp;#95;tokenstore&amp;#95;and&amp;#95;sessionstore&amp;#95;protocols&quot;&gt;&lt;/a&gt;Cylon persistence:  TokenStore and SessionStore protocols&lt;/h4&gt;&lt;p&gt;As you can see in the system diagram there're a lot of &lt;strong&gt;session-store&lt;/strong&gt; and &lt;strong&gt;token-store&lt;/strong&gt; components needed to keep information in the different Oauth communication flows.  Following are the protocols descriptions:&lt;/p&gt;&lt;p&gt;&lt;strong&gt;cylon.token-store.protocols/&lt;a href='https://github.com/juxt/cylon/blob/master/src/cylon/token&amp;#95;store/protocols.clj#L11'&gt;TokenStore&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt; All TokenStore implementations must provide temporary or persistent   storage and must expire tokens that are no longer valid. Expiry   policies are left to the implementor to decide. Token ids are   determined by the client, but are recommended to be resistent to   prediction and thus forgery (using HMAC, etc.). &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;&lt;strong&gt;cylon.session.protocols/&lt;a href='https://github.com/juxt/cylon/blob/master/src/cylon/session/protocols.clj#L3'&gt;SessionStore&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt; A SessionStore maps an identifier, stored in a cookie, to a set of   attributes. It is able to get cookies from the HTTP request, and set   them on the HTTP response. A SessionStore will typically wrap a   TokenStore. &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;Due that all &lt;strong&gt;session-store&lt;/strong&gt; need a token-store to maintain related data, let's remove from our visualisation all those obvius token-store components (highlighted in orange). On the other hand, let's do the same with listener and router component relations(hightlighted in yellow) removing listeners from visualisation&lt;/p&gt;&lt;p&gt;&lt;a href='https://dl.dropboxusercontent.com/u/8688858/cylon-oauth2-example/first-step.png'&gt;&lt;img src=&quot;https://dl.dropboxusercontent.com/u/8688858/cylon-oauth2-example/first-step.png&quot; alt=&quot;Drawing&quot; width=&quot;100%&quot;/&gt;&lt;/a&gt; &lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;h4&gt;&lt;a name=&quot;modular.template/templater&amp;#95;&amp;&amp;&amp;#95;modular.bidi/staticresourceservice&quot;&gt;&lt;/a&gt;modular.template/Templater &amp;&amp; modular.bidi/StaticResourceService&lt;/h4&gt;As we are trying to get into Oauth2 specification and implementation details, why don't we take way the public &lt;strong&gt;static resource services&lt;/strong&gt; (in yellow)  and the &lt;strong&gt;clostache-templater&lt;/strong&gt; (in orange)? ... they actually don't have any relation with Oauth2 besides html rendering&lt;a href='https://dl.dropboxusercontent.com/u/8688858/cylon-oauth2-example/second-step.png'&gt;&lt;img src=&quot;https://dl.dropboxusercontent.com/u/8688858/cylon-oauth2-example/second-step.png&quot; alt=&quot;Drawing&quot; style=&quot;width: 100%;&quot;/&gt;&lt;/a&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;/p&gt;&lt;h4&gt;&lt;a name=&quot;cylon&amp;#95;oauth&amp;#95;webservices&quot;&gt;&lt;/a&gt;cylon oauth webservices&lt;/h4&gt;And, one pass more to take away the routers but keeping highlighted web services from both servers, authorization-server web-services in yellow, and web-server web-services in orange. Pay attention that although all of the highlighted components in this graph are webservices, some webservices depend on other webservices, as you can see with :authorization-server and :login, or :bootstrap-cover-website-website and :webapp-oauth-client&lt;p&gt;&lt;a href='https://dl.dropboxusercontent.com/u/8688858/cylon-oauth2-example/third-step.png'&gt;&lt;img src=&quot;https://dl.dropboxusercontent.com/u/8688858/cylon-oauth2-example/third-step.png&quot; alt=&quot;Drawing&quot; style=&quot;width: 100%;&quot;/&gt;&lt;/a&gt;&lt;/p&gt;&lt;h4&gt;&lt;a name=&quot;yeah,&amp;#95;it&amp;#95;doesn't&amp;#95;hurt&amp;#95;now!&quot;&gt;&lt;/a&gt;Yeah, it doesn't hurt now!&lt;/h4&gt;Then, we get following webservices in two servers&lt;ul&gt;&lt;li&gt;&lt;strong&gt;:authorization-listener&lt;/strong&gt; webservices components: [&lt;strong&gt;:authorization-server, :reset-password, :signup-form :login :logout&lt;/strong&gt;]&lt;/li&gt;&lt;li&gt;&lt;strong&gt;:http-listener&lt;/strong&gt; webservices components: [&lt;strong&gt;:bootstrap-cover-website-website :webapp-oauth-client&lt;/strong&gt;].&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;hr&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;/p&gt;&lt;h1&gt;&lt;a name=&quot;oauth&amp;#95;client&quot;&gt;&lt;/a&gt;Oauth Client&lt;/h1&gt;&lt;h4&gt;&lt;a name=&quot;webservice&amp;#95;+&amp;#95;accesstokengrantee&amp;#95;+&amp;#95;requestauthenticator&quot;&gt;&lt;/a&gt;WebService + AccessTokenGrantee + RequestAuthenticator&lt;/h4&gt;The &lt;strong&gt;:webapp-oauth-client&lt;/strong&gt; (that represents the &lt;strong&gt;oauth client role&lt;/strong&gt;) lives on the same http-listener that our old &lt;strong&gt;:bootstrap-cover-website-website&lt;/strong&gt; to provide it with oauth client functionality. In other words, your current webapp only need this dependency to get the oauth client behavior (grant privileges, logout, solicit access token, validate token, refresh access token), moreover it can authenticate requests based in client session identity.&lt;br /&gt;&lt;p&gt;Reference implementation cylon.oauth.client.web-client/&lt;a href='https://github.com/juxt/cylon/blob/master/src/cylon/oauth/client/web&amp;#95;client.clj'&gt;WebClient&lt;/a&gt;&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;
+WebClient Protocols
+;==================
+
+modular.bidi/WebService &amp;#40;routes&amp;#41;:
+ + :get &amp;quot;/grant&amp;quot; 
+ + :get &amp;quot;/logout&amp;quot; 
+
+cylon.oauth.client/AccessTokenGrantee
+  &amp;#40;solicit-access-token
+    &amp;#91;&amp;#95; req uri&amp;#93;
+    &amp;#91;&amp;#95; req uri scope-korks&amp;#93;
+    &amp;quot;Initiate a process &amp;#40;typically via a HTTP redirect&amp;#41; that will result
+    in a new request being made with an access token, if possible. Don't
+    request specific scopes but get the defaults for the client.&amp;quot;&amp;#41;
+
+  &amp;#40;expired? &amp;#91;&amp;#95; req access-token&amp;#93;&amp;#41;
+  
+  &amp;#40;refresh-access-token &amp;#91;&amp;#95; req&amp;#93;
+    &amp;quot;Initiate a process &amp;#40;typically via a HTTP redirect&amp;#41; that will result
+    in a new request being made with an access token, if possible.&amp;quot;
+    &amp;#41;&amp;#41;
+
+cylon.authentication.protocols/RequestAuthenticator
+&amp;#40;authenticate &amp;#91;&amp;#95; request&amp;#93;
+    &amp;quot;Return &amp;#40;as a map&amp;#41; any credentials that can be determined from the
+    given Ring request&amp;quot;&amp;#41;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Then, &lt;span style=&quot;background-color:orange&quot;&gt;&lt;strong&gt;:webapp-oauth-client&lt;/strong&gt;&lt;/span&gt; besides behaving as an independet modular.bidi/&lt;strong&gt;WebService&lt;/strong&gt; connected to its related :router, and responsing to &lt;code&gt;/grant&lt;/code&gt; and &lt;code&gt;/logout&lt;/code&gt; http &lt;code&gt;get&lt;/code&gt; calls it also accomplish cylon.oauth.client/&lt;strong&gt;AccessTokenGrantee&lt;/strong&gt; for soliciting access token, validating token and refreshing tokens. &lt;/p&gt;&lt;p&gt;Also our client side can use the user identity obtained from auth-server to restrict client data using cylon.authentication.protocols/&lt;strong&gt;RequestAuthenticator&lt;/strong&gt; protocol. Please be aware that client data is not user data so the way that client authenticate its own data is responsability of client and is outside of OAuht2 spec. Anyway juxt/cylon provides a practical &lt;a href='https://github.com/juxt/cylon/blob/master/src/cylon/oauth/client.clj#L28'&gt;middleware&lt;/a&gt; to protect client resources based in the  client-session-store component and the identity obtained once user is logged with the auth-server. You can see how to use it this middleware on the demo project&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;  &lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;oauth&amp;#95;provider&amp;#95;:authorization-server&quot;&gt;&lt;/a&gt;Oauth Provider :authorization-server&lt;/h3&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;cylon.oauth.server.server/AuthorizationServer
+
+AuthorizationServer Protocols implemented
+;========================================
+
+modular.bidi/WebService &amp;#40;routes&amp;#41;:
+ + :get &amp;quot;/authorize&amp;quot; 
+ + :post &amp;quot;/permit-client&amp;quot; 
+ + :post &amp;quot;/access-token&amp;quot; 
+    
+cylon.authentication.protocols/RequestAuthenticator
+&amp;#40;authenticate &amp;#91;&amp;#95; request&amp;#93;
+    &amp;quot;Return &amp;#40;as a map&amp;#41; any credentials that can be determined from the
+    given Ring request&amp;quot;&amp;#41;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;TODO: in progress&lt;/p&gt;
+</description>
+<pubDate>
+Tue, 13 Jan 2015 00:00:00 +0800
+</pubDate>
+<author>
+fatfingererr
+</author>
+</item>
+<item>
+<guid>
+https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-15-milesian-aop.html
+</guid>
+<link>
+https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-15-milesian-aop.html
+</link>
+<title>
+Apply AOP in stuartsierra/component
+</title>
+<description>
+   &lt;br /&gt;&lt;p&gt;&lt;img src=&quot;https://dl.dropboxusercontent.com/u/8688858/epicarp-small.gif&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;introduction&quot;&gt;&lt;/a&gt;introduction&lt;/h3&gt;&lt;a href='https://github.com/milesian/aop'&gt;milesian/aop&lt;/a&gt;  lets you wrap your stuartsierra/components in the same way as AOP does. &lt;p&gt;... for those who aren't familiar with &lt;a href='http://en.wikipedia.org/wiki/Aspect-oriented&amp;#95;programming'&gt;AOP&lt;/a&gt;, it is a programming paradigme that aims to increase modularity by allowing the separation of cross-cutting concerns. Examples of cross-cutting concerns can be: applying security, logging and throwing events, and as wikipedia explains:&lt;blockquote&gt;&lt;p&gt; Logging exemplifies a crosscutting concern because a logging strategy necessarily affects every logged part of the system. Logging thereby crosscuts all logged classes and methods....  &lt;/p&gt;&lt;/blockquote&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;what&amp;#95;is&amp;#95;it&amp;#95;included?&quot;&gt;&lt;/a&gt;what is it included?&lt;/h3&gt;It includes a &lt;strong&gt;wrap function&lt;/strong&gt; that works as a customization system function and specific &lt;strong&gt;component-matchers&lt;/strong&gt; to calculate the-component-place where we'll apply middleware.&lt;h3&gt;&lt;a name=&quot;basic&amp;#95;howto&quot;&gt;&lt;/a&gt;basic howto&lt;/h3&gt;To simplify AOP meanings, let's try &lt;em&gt;refactoring&lt;/em&gt; for a while two AOP concepts to quickly understand the functionality provided.&lt;ul&gt;&lt;li&gt;the &lt;strong&gt;thing-to-happen&lt;/strong&gt; = aspect/cross-cutting concern&lt;/li&gt;&lt;li&gt;the &lt;strong&gt;place-where-will-happen&lt;/strong&gt; = target&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;So, basically to include a new &lt;strong&gt;thing-to-happen&lt;/strong&gt; in your component system, you need to define the &lt;strong&gt;thing-to-happen&lt;/strong&gt; and the &lt;strong&gt;place-where-will-happen&lt;/strong&gt;&lt;/p&gt; &lt;br /&gt;&lt;h4&gt;&lt;a name=&quot;&lt;strong&gt;thing-to-happen&lt;/strong&gt;&quot;&gt;&lt;/a&gt;&lt;strong&gt;thing-to-happen&lt;/strong&gt;&lt;/h4&gt;It's &lt;strong&gt;a function milddleware&lt;/strong&gt;, very similar to &lt;a href='https://github.com/ring-clojure/ring/wiki/Concepts#middleware'&gt;common ring middleware&lt;/a&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;defn your-fn-middleware
+  &amp;#91;&amp;#42;fn&amp;#42; this &amp;amp; args&amp;#93;
+  &amp;#40;let &amp;#91;fn-result &amp;#40;apply &amp;#42;fn&amp;#42; &amp;#40;conj args this&amp;#41;&amp;#41;&amp;#93;
+   fn-result&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt; &lt;br /&gt;&lt;h4&gt;&lt;a name=&quot;&lt;strong&gt;place-where-will-happen&lt;/strong&gt;&quot;&gt;&lt;/a&gt;&lt;strong&gt;place-where-will-happen&lt;/strong&gt;&lt;/h4&gt;It's calculated with a &lt;a href='https://github.com/tangrammer/defrecord-wrapper/blob/master/src/defrecord&amp;#95;wrapper/aop.clj#L4'&gt;defrecord-wrapper.aop/Matcher&lt;/a&gt; protocol implementation&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;defprotocol defrecord-wrapper.aop/Matcher
+  &amp;#40;match &amp;#91;this protocol function-name function-args&amp;#93;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;&lt;a name=&quot;minimal&amp;#95;example&quot;&gt;&lt;/a&gt;Minimal example&lt;/h3&gt;As you can see the options available to decide if the &lt;strong&gt;thing&lt;/strong&gt; has to happen in current &lt;strong&gt;place&lt;/strong&gt; are component protocol, function-name and function-argsLet's try to use this AOP stuff in a minimal example: &lt;h4&gt;&lt;a name=&quot;1.&amp;#95;define&amp;#95;protocols&amp;#95;and&amp;#95;component&quot;&gt;&lt;/a&gt;1. define protocols and component&lt;/h4&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;defprotocol Database
+  &amp;#40;save-user &amp;#91;&amp;#95; user&amp;#93;&amp;#41;
+  &amp;#40;remove-user &amp;#91;&amp;#95; user&amp;#93;&amp;#41;&amp;#41;
+
+&amp;#40;defprotocol WebSocket
+  &amp;#40;send &amp;#91;&amp;#95; data&amp;#93;&amp;#41;&amp;#41;
+
+&amp;#40;defrecord YourComponent &amp;#91;&amp;#93;
+  Database
+  &amp;#40;save-user &amp;#91;this user&amp;#93;
+    &amp;#40;format &amp;quot;saving user: %&amp;quot; user &amp;#41;&amp;#41;
+  &amp;#40;remove-user &amp;#91;this user&amp;#93;
+    &amp;#40;format &amp;quot;removing user: %&amp;quot; user &amp;#41;&amp;#41;
+  Websocket
+  &amp;#40;send &amp;#91;this data&amp;#93;
+    &amp;#40;format &amp;quot;sending data: %&amp;quot; data&amp;#41;&amp;#41;&amp;#41;
+   
+&lt;/code&gt;&lt;/pre&gt;&lt;h4&gt;&lt;a name=&quot;2.&amp;#95;define&amp;#95;your&amp;#95;middleware&amp;#95;to&amp;#95;apply&amp;#95;(thing-to-happen)&quot;&gt;&lt;/a&gt;2. define your middleware to apply (thing-to-happen)&lt;/h4&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;defn logging-middleware
+  &amp;#91;&amp;#42;fn&amp;#42; this &amp;amp; args&amp;#93;
+  &amp;#40;let &amp;#91;fn-result &amp;#40;apply &amp;#42;fn&amp;#42; &amp;#40;conj args this&amp;#41;&amp;#41;&amp;#93;
+   &amp;#40;println &amp;quot;aop-logging/ function-name:&amp;quot; &amp;#40;:function-name &amp;#40;meta &amp;#42;fn&amp;#42;&amp;#41;&amp;#41;&amp;#41;
+   fn-result&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;h4&gt;&lt;a name=&quot;3.&amp;#95;define&amp;#95;your&amp;#95;matcher&amp;#95;(place-where-will-happen)&quot;&gt;&lt;/a&gt;3. define your matcher (place-where-will-happen)&lt;/h4&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;;; maybe you want match all your component fns protocols
+
+&amp;#40;defrecord YourComponentMatcher &amp;#91;middleware&amp;#93;
+  defrecord-wrapper.aop/Matcher
+  &amp;#40;match &amp;#91;this protocol function-name function-args&amp;#93;
+    &amp;#40;when &amp;#40;contains? #{Database WebSocket} protocol&amp;#41;&amp;#41;
+    middleware&amp;#41;&amp;#41;
+    
+
+;; or maybe you're only are interested in Database/remove-user function
+
+&amp;#40;defrecord YourRefinedComponentMatcher &amp;#91;middleware&amp;#93;
+  defrecord-wrapper.aop/Matcher
+  &amp;#40;match &amp;#91;this protocol function-name function-args&amp;#93;
+    &amp;#40;when &amp;#40;and &amp;#40;= Database protocol&amp;#41; &amp;#40;= function-name &amp;quot;remove-user&amp;quot;&amp;#41;&amp;#41;&amp;#41;
+    middleware&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;h4&gt;&lt;a name=&quot;4.&amp;#95;wrap&amp;#95;your&amp;#95;system&amp;#95;(apply&amp;#95;conditional&amp;#95;middleware&amp;#95;to&amp;#95;your&amp;#95;components)&quot;&gt;&lt;/a&gt;4. wrap your system (apply conditional middleware to your components)&lt;/h4&gt; &lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;;;  construct your instance of SystemMap as usual
+&amp;#40;def system-map &amp;#40;component/system-map :your-component &amp;#40;YourComponent.&amp;#41;&amp;#41;&amp;#41;
+
+;; Using stuartsierra customization way
+&amp;#40;def started-system &amp;#40;-&amp;gt; system-map
+                        &amp;#40;component/update-system 
+                         &amp;#40;comp component/start 
+                               #&amp;#40;milesian.aop/wrap % &amp;#40;YourRefinedComponentMatcher. logging-middleware&amp;#41;&amp;#41;&amp;#41;&amp;#41;&amp;#41;&amp;#41;
+  
+  ;; or, if you prefer a better way to express the same
+  ;; you can use milesian/BigBang
+&amp;#40;def started-system &amp;#40;milesian.bigbang/expand
+                     system-map
+                     {:before-start &amp;#91;&amp;#93;
+                      :after-start  &amp;#91;&amp;#91;milesian.aop/wrap &amp;#40;YourRefinedComponentMatcher. logging-middleware&amp;#41;&amp;#93;&amp;#93;}&amp;#41;&amp;#41;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;h4&gt;&lt;a name=&quot;5.&amp;#95;try&amp;#95;your&amp;#95;wrapped-started-system&quot;&gt;&lt;/a&gt;5. try your wrapped-started-system&lt;/h4&gt; &lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;;;  construct your instance of SystemMap as usual
+&amp;#40;-&amp;gt; started-system :your-component &amp;#40;send &amp;quot;data&amp;quot;&amp;#41;&amp;#41;
+=&amp;gt; repl output: aop-logging/ function-name: send
+
+&lt;/code&gt;&lt;/pre&gt;&lt;h2&gt;&lt;a name=&quot;let's&amp;#95;match&amp;#95;with&amp;#95;component&amp;#95;perspective&quot;&gt;&lt;/a&gt;Let's match with component perspective&lt;/h2&gt;&lt;p&gt;milesian/aop includes a &lt;a href='https://github.com/tangrammer/defrecord-wrapper/blob/master/src/defrecord&amp;#95;wrapper/aop.clj#L4-L5'&gt;Matcher&lt;/a&gt; implementation that &lt;strong&gt;uses a stuartsierra/component perspective in contrast to&lt;/strong&gt; function and protocol perspective of &lt;a href='https://github.com/tangrammer/defrecord-wrapper/blob/master/README.md#matchers-available-in-tangrammerdefrecord-wrapper'&gt;matchers&lt;/a&gt; included on more generic tangrammer/defrecord-wrapper lib Also offers a simple &quot;Dependency Component Query Oriented&quot; that I found very useful to think/query the system in a component way :- in our component case is the same as straighforward way &lt;/p&gt;&lt;h4&gt;&lt;a name=&quot;componentmatcher&quot;&gt;&lt;/a&gt;ComponentMatcher&lt;/h4&gt;This implementation  uses the system component-id to match using its component protocols and the middleware fn to apply.&lt;p&gt;Example using previous example will match both protocols: Database and Websocket, and therefore all their related fns. Previous matchers examples used protocols and fn-names to do their works, now we are at a high level, a component level.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;
+&amp;#40;milesian.aop.matchers/new-component-matcher :system system-map 
+                                             :components &amp;#91;:your-component&amp;#93; 
+                                             :fn logging-middleware&amp;#41;&amp;#93;                                          
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;&lt;a name=&quot;dependency&amp;#95;component&amp;#95;query&amp;#95;oriented&quot;&gt;&lt;/a&gt;Dependency Component Query Oriented&lt;/h3&gt;This project also contains two ComponentMatcher function constructors that let you match using a dependency component query point of view. &lt;p&gt;Let's extend our data example adding a couple of components more:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;defprotocol Greetings
+  &amp;#40;morning &amp;#91;&amp;#95;&amp;#93;&amp;#41;&amp;#41;
+
+&amp;#40;defrecord GreetingsComponent &amp;#91;your-component&amp;#93;
+  Greetings
+  &amp;#40;morning &amp;#91;this&amp;#93;
+    &amp;#40;send your-component &amp;quot;Morning, it's a great day here!&amp;quot;&amp;#41;&amp;#41;
+
+&amp;#40;defprotocol Connector
+  &amp;#40;connect &amp;#91;&amp;#95;&amp;#93;&amp;#41;&amp;#41;
+
+&amp;#40;defrecord ConnectorComponent &amp;#91;greetings-component&amp;#93;
+  Connector
+  &amp;#40;connect &amp;#91;this&amp;#93;
+    &amp;#40;morning greetings-component&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;And also we'll need extend our system definition&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;def system-map &amp;#40;component/system-map   
+                 :your-component &amp;#40;YourComponent.&amp;#41;
+                 :greetings-components &amp;#40;-&amp;gt;&amp;#40;GreetingsComponent.&amp;#41;
+                                          &amp;#40;component/using &amp;#91;:your-component&amp;#93;&amp;#41;&amp;#41;
+                 :connector-component &amp;#40;-&amp;gt;&amp;#40;ConnectorComponent.&amp;#41;
+                                         &amp;#40;component/using &amp;#91;:connector-component&amp;#93;&amp;#41;&amp;#41;&amp;#41;&amp;#41;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;h4&gt;&lt;a name=&quot;componenttransitivedependenciesmatcher&amp;#95;fn&amp;#95;constructor&quot;&gt;&lt;/a&gt;ComponentTransitiveDependenciesMatcher fn constructor&lt;/h4&gt;&lt;strong&gt;&lt;a href='https://github.com/milesian/aop/blob/master/src/milesian/aop/matchers.clj#L33'&gt;new-component-transitive-dependencies-matcher&lt;/a&gt;&lt;/strong&gt; uses &lt;a href='https://github.com/stuartsierra/dependency/blob/master/src/com/stuartsierra/dependency.clj#L19'&gt;stuartsierra/dependency transitive-dependencies&lt;/a&gt; to get all component dependencies for each component specified in &lt;code&gt;:components &amp;#91;...&amp;#93;&lt;/code&gt; argument. &lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;milesian.aop.matchers/new-component-transitive-dependencies-matcher 
+ :system system-map 
+ :components &amp;#91;:your-component&amp;#93; 
+ :fn logging-middleware&amp;#41;
+;; it's the same as                                           
+
+&amp;#40;milesian.aop.matchers/new-component-matcher 
+ :system system-map 
+ :components &amp;#91;:your-component :greetings-component :connector-component&amp;#93; 
+ :fn logging-middleware&amp;#41;
+ 
+&lt;/code&gt;&lt;/pre&gt; &lt;h4&gt;&lt;a name=&quot;componenttransitivedependentsmatcher&amp;#95;fn&amp;#95;constructor&quot;&gt;&lt;/a&gt;ComponentTransitiveDependentsMatcher fn constructor&lt;/h4&gt;&lt;strong&gt;&lt;a href='https://github.com/milesian/aop/blob/master/src/milesian/aop/matchers.clj#L40'&gt;new-component-transitive-dependents-matcher&lt;/a&gt;&lt;/strong&gt; uses &lt;a href='https://github.com/stuartsierra/dependency/blob/master/src/com/stuartsierra/dependency.clj#L22'&gt;stuartsierra/dependency transitive-dependents&lt;/a&gt; to get the all dependents components for each component specified in &lt;code&gt;:components &amp;#91;...&amp;#93;&lt;/code&gt; argument.&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;milesian.aop.matchers/new-component-transitive-dependents-matcher 
+ :system system-map 
+ :components &amp;#91;:connector-component&amp;#93; 
+ :fn logging-middleware&amp;#41;
+;; it's the same as                                           
+
+&amp;#40;milesian.aop.matchers/new-component-matcher 
+ :system system-map 
+ :components &amp;#91;:your-component :greetings-component :connector-component&amp;#93; 
+ :fn logging-middleware&amp;#41;
+ 
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+<pubDate>
+Mon, 15 Dec 2014 00:00:00 +0800
+</pubDate>
+<author>
+fatfingererr
+</author>
+</item>
+<item>
+<guid>
+https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-12-bigbang.html
+</guid>
+<link>
+https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-12-bigbang.html
+</link>
+<title>
+Customizing stuartsierra/component
+</title>
+<description>
+&lt;p&gt;My interest in customization systems started when I tryed to achieve &lt;a href='https://github.com/tangrammer/webclient-system-diagram'&gt;real time system visualisations&lt;/a&gt;, and &lt;a href='https://github.com/tangrammer/co-dependency'&gt;reverse dependency injection (also called 'co-dependency')&lt;/a&gt;. To solve both requirements I started with forking original stuartsierra/component library until I realised that I could use the &lt;em&gt;&quot;customization way&quot;&lt;/em&gt; of this library&lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;what&amp;#95;is&amp;#95;a&amp;#95;component?&quot;&gt;&lt;/a&gt;what is a component?&lt;/h2&gt;Extracted from the component/&lt;a href='https://github.com/stuartsierra/component/blob/master/README.md'&gt;README&lt;/a&gt;&lt;blockquote&gt;&lt;p&gt; For the purposes of this framework, a component is a collection of functions or procedures which &lt;strong&gt;share some runtime state&lt;/strong&gt;. &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;But, I really think that we can improve the clarity of this definition with my following one:&lt;h4&gt;&lt;a name=&quot;started-component&amp;#95;(own&amp;#95;definition&amp;#95;proposal)&quot;&gt;&lt;/a&gt;started-component (own definition proposal)&lt;/h4&gt;&lt;blockquote&gt;&lt;p&gt; &lt;strong&gt;a started&lt;/strong&gt; component is a collection of functions or procedures wich share some runtime state &lt;strong&gt;produced in component/start&lt;/strong&gt; (possibly using other started components, also called dependencies)&lt;br /&gt; &lt;/p&gt;&lt;/blockquote&gt;One example of started-component can be a webserver component listening on a specific port. As you can realise, once the server is started the port is assigned, then if you try to start again your server component using same port value you'll get a &lt;strong&gt;&quot;java.net.BindException: Address already in use:&quot;&lt;/strong&gt; &lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;update-system:&amp;#95;for&amp;#95;everything&amp;#95;and&amp;#95;everywhere&quot;&gt;&lt;/a&gt;update-system: for everything and everywhere&lt;/h2&gt;&lt;p&gt;IMHO this update-system is the key function to understand the internals and the endless posibilities of stuartsierra/component library, &lt;strong&gt;used to update, start or customize&lt;/strong&gt; your component system.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;defn update-system
+  &amp;quot;Invokes &amp;#40;apply f component args&amp;#41; on each of the components at
+  component-keys in the system, in dependency order. Before invoking
+  f, assoc's updated dependencies of the component.&amp;quot;
+  &amp;#91;system component-keys f &amp;amp; args&amp;#93;
+  &amp;#40;let &amp;#91;graph &amp;#40;dependency-graph system component-keys&amp;#41;&amp;#93;
+    &amp;#40;reduce &amp;#40;fn &amp;#91;system key&amp;#93;
+              &amp;#40;assoc system key
+                     &amp;#40;-&amp;gt; &amp;#40;get-component system key&amp;#41;
+                         &amp;#40;assoc-dependencies system&amp;#41;
+                         &amp;#40;try-action system key f args&amp;#41;&amp;#41;&amp;#41;&amp;#41;
+            system
+            &amp;#40;sort &amp;#40;dep/topo-comparator graph&amp;#41; component-keys&amp;#41;&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;...so update-system it's a common reduction on the system that applies any fn to each component after injecting fresh dependencies. And... logically, &lt;em&gt;if we pass a system and a fn we get a new-updated-system&lt;/em&gt;. &lt;br /&gt; &lt;br /&gt; &lt;br /&gt;&lt;h4&gt;&lt;a name=&quot;&lt;strong&gt;update-system:&amp;#95;to&amp;#95;start&amp;#95;your&amp;#95;system&amp;#95;(all&amp;#95;your&amp;#95;components)&lt;/strong&gt;&quot;&gt;&lt;/a&gt;&lt;strong&gt;update-system: to start your system (all your components)&lt;/strong&gt;&lt;/h4&gt;&lt;p&gt;As you can see: &lt;a href='https://github.com/stuartsierra/component/blob/master/src/com/stuartsierra/component.clj#L151'&gt;component/start-system&lt;/a&gt; also uses &lt;code&gt;component/update-system&lt;/code&gt; to call component/start to get the system started. &lt;br /&gt;    &lt;/p&gt; &lt;br /&gt;&lt;h4&gt;&lt;a name=&quot;&lt;strong&gt;update-system:&amp;#95;to&amp;#95;customize&amp;#95;your&amp;#95;system&amp;#95;(all&amp;#95;your&amp;#95;components)&lt;/strong&gt;&quot;&gt;&lt;/a&gt;&lt;strong&gt;update-system: to customize your system (all your components)&lt;/strong&gt;&lt;/h4&gt;&lt;p&gt;Extracted from component/&lt;a href='https://github.com/stuartsierra/component/blob/master/README.md#customization'&gt;README#customization&lt;/a&gt; :&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt; Both &lt;code&gt;update-system&lt;/code&gt; and &lt;code&gt;update-system-reverse&lt;/code&gt; take a function as an argument  &lt;br /&gt;and call it on each component in the system.&lt;br /&gt;Along the way, they &lt;code&gt;assoc&lt;/code&gt; in the updated dependencies of each component.  &lt;br /&gt;The &lt;code&gt;update-system&lt;/code&gt; function iterates over the components in dependency order  &lt;br /&gt; (a component will be called after its dependencies).... &lt;/p&gt;&lt;/blockquote&gt; &lt;br /&gt;&lt;h2&gt;&lt;a name=&quot;how&amp;#95;can&amp;#95;i&amp;#95;customize&amp;#95;my&amp;#95;component?&quot;&gt;&lt;/a&gt;How can I customize my component?&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;In the component world, customizing your component is&lt;/strong&gt; to apply updates to the component before injecting it into its dependants (or before leaving this component in the system to others components to use it).&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;;; so in other words ... the update-system internal code :-
+		&amp;#40;assoc system key
+	                 &amp;#40;-&amp;gt; &amp;#40;get-component system key&amp;#41;
+	                     &amp;#40;assoc-dependencies system&amp;#41;
+	                     &amp;#40;try-action system key f args&amp;#41;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can update your system (all your components) with update-system function like that: &lt;br /&gt;&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;
+&amp;#40;defn component-customizer&amp;#91;component &amp;amp; args&amp;#93;
+	... apply any transformation to your component and return your component updated
+  	component&amp;#41;
+  	
+
+&amp;#40;component/update-system your-system component-customizer&amp;#41; 	
+  	
+&lt;/code&gt;&lt;/pre&gt;&lt;h2&gt;&lt;a name=&quot;when&amp;#95;can&amp;#95;i&amp;#95;customize&amp;#95;my&amp;#95;component?&quot;&gt;&lt;/a&gt;When can I customize my component?&lt;/h2&gt;&lt;p&gt;Try to rethink my previous started-component example, and...&lt;blockquote&gt;&lt;p&gt;One example of started-component can be a webserver component listening on a specific port. As you can realise, once the server is started the port is assigned, then if you try to start again your server component using same port value you'll get a &lt;strong&gt;&quot;java.net.BindException: Address already in use:&quot;&lt;/strong&gt;&lt;br /&gt; &lt;/p&gt;&lt;/blockquote&gt;&lt;/p&gt;&lt;p&gt;let's find the differences of two following sequence calls:&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;-&amp;gt; system                                              ;;  {components}
+    &amp;#40;component/update-system your-update-fn your-args&amp;#41;  ;;  {updated-components}
+    &amp;#40;component/update-system component/start&amp;#41;           ;;  {started-updated-components}
+    
+&amp;#40;-&amp;gt; system                                              ;;  {components}
+    &amp;#40;component/update-system component/start&amp;#41;           ;;  {started-components} 
+    &amp;#40;component/update-system your-update-fn your-args&amp;#41;  ;;  {updated-started-components}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Yes, we get different results &lt;code&gt;{started-updated-components}&lt;/code&gt; vs &lt;code&gt;{updated-started-components}&lt;/code&gt;, and If we simplify the problem...&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;;; case 1 {started-updated-components}
+
+user&amp;gt; &amp;#40;def system {:a 1}&amp;#41;
+user&amp;gt; &amp;#40;def system-updated &amp;#40;assoc system :c 3&amp;#41;&amp;#41;
+user&amp;gt; &amp;#40;def system-started &amp;#40;assoc system-updated :b 2&amp;#41;&amp;#41;
+user&amp;gt;  &amp;#40;system-started :c&amp;#41;
+=&amp;gt; :3
+
+;; case 2 {updated-started-components}
+
+user&amp;gt; &amp;#40;def system {:a 1}&amp;#41;
+user&amp;gt; &amp;#40;def system-started &amp;#40;assoc system :b 2&amp;#41;&amp;#41;
+user&amp;gt; &amp;#40;def system-updated &amp;#40;assoc system-started :c 3&amp;#41;&amp;#41;
+user&amp;gt; &amp;#40;nil? &amp;#40;system-started :c&amp;#41;&amp;#41;
+=&amp;gt; true
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;When we update our system with component/start we get the running system state and further updates over this running system state are not available to this started-system-value&lt;/strong&gt;&lt;/p&gt;&lt;h2&gt;&lt;a name=&quot;bigbang:&amp;#95;all&amp;#95;component&amp;#95;updates&amp;#95;are&amp;#95;just-before&amp;#95;and&amp;#95;just-after&amp;#95;component/start&quot;&gt;&lt;/a&gt;BigBang: all component updates are just-before and just-after component/start&lt;/h2&gt;&lt;a href='https://github.com/milesian/BigBang'&gt;milesian/BigBang&lt;/a&gt; generalize the &quot;how and when can you customize your system?&quot; &lt;strong&gt;letting you compose all your component updates in the same component/start invocation time&lt;/strong&gt;, but distinguishing those updates that have to happen just-before from those that have to happen just-after component/start.&lt;p&gt;So you write this code&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;
+&amp;#40;bigbang/expand system-map
+                        {:before-start &amp;#91;&amp;#91;fn1 arg1&amp;#93;
+                                        &amp;#91;fn2 arg1 arg2&amp;#93;&amp;#93;
+                         :after-start  &amp;#91;&amp;#91;fn3 arg1 arg2&amp;#93;
+                                        &amp;#91;fn4 arg1&amp;#93;&amp;#93;}&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;and you get this&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;clojure&quot;&gt;&amp;#40;update-system system-map #&amp;#40;comp &amp;#40;apply fn4 &amp;#91;arg1&amp;#93;&amp;#41; &amp;#40;apply fn3 &amp;#91;arg1 arg2&amp;#93;&amp;#41; component/start &amp;#40;apply fn2 &amp;#91;arg1 arg2&amp;#93;&amp;#41; &amp;#40;apply fn1 &amp;#91;arg1&amp;#93;&amp;#41;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+<pubDate>
+Fri, 12 Dec 2014 00:00:00 +0800
+</pubDate>
+<author>
+fatfingererr
+</author>
+</item>
+<item>
+<guid>
+https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-02-cryogen-and-github.html
+</guid>
+<link>
+https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-02-cryogen-and-github.html
+</link>
+<title>
+cryogen in github pages 
+</title>
+<description>
+&lt;h4&gt;&lt;a name=&quot;...&amp;#95;because&amp;#95;it&amp;#95;wasn't&amp;#95;so&amp;#95;easy&amp;#95;:)&amp;#95;...&amp;#95;&lt;a&amp;#95;href='https://github.com/lacarmen/cryogen/issues/36'&gt;issue&lt;/a&gt;&quot;&gt;&lt;/a&gt;... because it wasn't so easy :) ... &lt;a href='https://github.com/lacarmen/cryogen/issues/36'&gt;issue&lt;/a&gt;&lt;/h4&gt;I'll share here the process that I'd to follow to get &lt;a href='https://github.com/lacarmen/cryogen'&gt;cryogen&lt;/a&gt; (a great clojure static site generator) finally working in &lt;a href='https://pages.github.com/'&gt;github pages&lt;/a&gt;. &lt;br /&gt;&lt;h3&gt;&lt;a name=&quot;1.&amp;#95;setup&amp;#95;two&amp;#95;github&amp;#95;repos&quot;&gt;&lt;/a&gt;1. setup two github repos&lt;/h3&gt;&lt;ol&gt;&lt;li&gt;follow &lt;a href='https://help.github.com/articles/create-a-repo/'&gt;github instructions&lt;/a&gt; and create a repo named &quot;your-blog&quot;&lt;/li&gt;&lt;li&gt;follow &lt;a href='https://help.github.com/articles/create-a-repo/'&gt;github instructions&lt;/a&gt; and create a repo named &quot;your-github-name-account.github.com&quot; (in my case tangrammer.github.com)&lt;/li&gt;&lt;/ol&gt;&lt;h3&gt;&lt;a name=&quot;2.&amp;#95;create&amp;#95;locally&amp;#95;your&amp;#95;cryogen&amp;#95;blog&amp;#95;project&quot;&gt;&lt;/a&gt;2. create locally your cryogen blog project&lt;/h3&gt;&lt;ol&gt;&lt;li&gt;&lt;code&gt;$ lein new cryogen your-blog&lt;/code&gt;&lt;/li&gt;&lt;li&gt;&lt;code&gt;$ cd your-blog&lt;/code&gt;&lt;/li&gt;&lt;/ol&gt;&lt;h3&gt;&lt;a name=&quot;3&amp;#95;.configure&amp;#95;cryogen&amp;#95;to&amp;#95;work&amp;#95;with&amp;#95;github&amp;#95;pages&quot;&gt;&lt;/a&gt;3 .configure cryogen to work with github pages&lt;/h3&gt;change resources/templates/config.edn  &lt;br /&gt;&lt;code&gt;:blog-prefix      &amp;quot;&amp;quot; &lt;/code&gt;&lt;h3&gt;&lt;a name=&quot;4.&amp;#95;configure&amp;#95;github&amp;#95;repos&quot;&gt;&lt;/a&gt;4. configure github repos&lt;/h3&gt;&lt;ol&gt;&lt;li&gt;&lt;code&gt;$ git init&lt;/code&gt;&lt;/li&gt;&lt;li&gt;add &lt;code&gt;/resources/public&lt;/code&gt; line to your-blog/.gitignore file&lt;/li&gt;&lt;li&gt;&lt;code&gt;$ git add . &amp;amp;&amp;amp;  git commit -m &amp;quot;first commit&amp;quot;&lt;/code&gt;&lt;/li&gt;&lt;li&gt;&lt;code&gt;$ git remote add origin git@github.com:your-github-name-account/your-blog.git &amp;amp;&amp;amp; git push -u origin master&lt;/code&gt;&lt;/li&gt;&lt;li&gt;&lt;code&gt;$ git clone git@github.com:your-github-name-account/your-github-name-account.github.com.git resources/public&lt;/code&gt;&lt;/li&gt;&lt;/ol&gt;&lt;h3&gt;&lt;a name=&quot;5.&amp;#95;start&amp;#95;cryogen&amp;#95;and&amp;#95;edit&amp;#95;your&amp;#95;resources&amp;#95;&lt;em&gt;.md&quot;&gt;&lt;/a&gt;5. start cryogen and edit your resources &lt;/em&gt;.md&lt;/h3&gt; &lt;code&gt;$ lein ring server&lt;/code&gt; &lt;br /&gt;&lt;h3&gt;&lt;a name=&quot;6.&amp;#95;publish&amp;#95;your&amp;#95;changes&quot;&gt;&lt;/a&gt;6. publish your changes&lt;/h3&gt;&lt;p&gt;&lt;code&gt;$ git add . &amp;amp;&amp;amp; git commit -am &amp;quot;WIP&amp;quot; &amp;amp;&amp;amp; git push&lt;/code&gt; &lt;br /&gt;&lt;/p&gt;&lt;p&gt;&lt;code&gt;$ cd resources/public &amp;amp;&amp;amp;  git add . &amp;amp;&amp;amp; git commit -am &amp;quot;WIP&amp;quot; &amp;amp;&amp;amp; git push &amp;amp;&amp;amp; cd ../../&lt;/code&gt;   	 	&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;(loop)&amp;#95;=&gt;&amp;#95;instructions&amp;#95;to&amp;#95;make&amp;#95;changes&quot;&gt;&lt;/a&gt;(Loop) =&gt; Instructions to make changes&lt;/h3&gt;&lt;pre&gt;&lt;code&gt;cd your-blog
+lein ring server
+.... edit your site to get new web version ....
+... and push changes to both repos ....
+git add . &amp;amp;&amp;amp; git commit -am &amp;quot;WIP&amp;quot; &amp;amp;&amp;amp; git push
+cd resources/public &amp;amp;&amp;amp;  git add . &amp;amp;&amp;amp; git commit -am &amp;quot;WIP&amp;quot; &amp;amp;&amp;amp; git push &amp;amp;&amp;amp; cd ../../
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;PS: now using &lt;a href='http://macdown.uranusjr.com/'&gt;MacDown&lt;/a&gt; as Markdown editor client&lt;/strong&gt;&lt;/p&gt;
+</description>
+<pubDate>
+Tue, 02 Dec 2014 00:00:00 +0800
+</pubDate>
+<author>
+fatfingererr
+</author>
+</item>
+<item>
+<guid>
+https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-01-move-clojure.html
+</guid>
+<link>
+https://fatfingererr.github.io/cryogen-blog/resources/public/posts/2014-12-01-move-clojure.html
+</link>
+<title>
+on the clojure move
+</title>
+<description>
+&lt;p&gt;Almost three years have passed since my first clojure &lt;em&gt;collision&lt;/em&gt; and now starting to publish about the resulting clojure move.&lt;br /&gt;&lt;/p&gt;&lt;p&gt;Hope you enjoy!&lt;br /&gt; Juan&lt;/p&gt;
+</description>
+<pubDate>
+Mon, 01 Dec 2014 00:00:00 +0800
+</pubDate>
+<author>
+fatfingererr
+</author>
+</item>
+</channel>
+</rss>
