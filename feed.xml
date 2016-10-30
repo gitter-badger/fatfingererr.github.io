@@ -15,10 +15,50 @@ fatfingererr.github.io
 fatfingererr blog
 </description>
 <lastBuildDate>
-Sun, 30 Oct 2016 00:50:27 +0800
+Sun, 30 Oct 2016 11:46:00 +0800
 </lastBuildDate>
 <author>
 fatfingererr
 </author>
+<item>
+<guid>
+fatfingererr.github.io/posts/2016-10-30-以cryogen搭建個人部落格.html
+</guid>
+<link>
+fatfingererr.github.io/posts/2016-10-30-以cryogen搭建個人部落格.html
+</link>
+<title>
+以 cryogen 搭建個人部落格
+</title>
+<description>
+&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;首先至 &lt;a href='http://cryogenweb.org/'&gt;cryogen&lt;/a&gt; 的 &lt;a href='https://github.com/cryogen-project/cryogen'&gt;GitHub repo&lt;/a&gt;，從 README 中的 &lt;a href='https://github.com/cryogen-project/cryogen/blob/master/README.md#some-sites-made-with-cryogen'&gt;Some Sites Made With Cryogen&lt;/a&gt; 中挑選一個喜歡的主題&lt;/p&gt;&lt;p&gt;你很快會發現許多人的樣式都很類似，那是 cryogen 的預設模板，而本部落格使用的是 &lt;a href='http://tangrammer.github.io/'&gt;on the clojure move&lt;/a&gt; 的模板&lt;/p&gt;&lt;p&gt;你可以至 &lt;a href='https://github.com/tangrammer/cryogen-blog'&gt;on the clojure move 的 Github repo&lt;/a&gt; 複製一份為自己所用，或是到 &lt;a href='https://github.com/fatfingererr/cryogen-blog'&gt;我的 Github repo&lt;/a&gt; 複製一份中文的&lt;/p&gt;&lt;p&gt;我也是以該模板簡單微調，都沒有關係&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;clone&amp;#95;完整的&amp;#95;cryogen&amp;#95;repo&amp;#95;到電腦中&quot;&gt;&lt;/a&gt;clone 完整的 cryogen repo 到電腦中&lt;/h3&gt;&lt;pre&gt;&lt;code&gt;git clone https://github.com/fatfingererr/cryogen-blog.git
+cd cryogen-blog
+lein ring server
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;接著打開 &lt;a href='http://localhost:3000/'&gt;http://localhost:3000/&lt;/a&gt; 就可以看到部落格樣板在自己電腦中運行的樣子&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/cryogen-repo-struct.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;cryogen-blog&amp;#95;專案資料夾架構&quot;&gt;&lt;/a&gt;cryogen-blog 專案資料夾架構&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;我們比較常用到的是 &lt;code&gt;resources&lt;/code&gt; 資料夾，主要是對 blog 的文章與頁面進行新增與修改&lt;/p&gt;&lt;p&gt;因為整個 blog 的 clojure 運作模式已大抵完成，關於 clojure 的部分我們比較少會去動到&lt;/p&gt;&lt;p&gt;在 &lt;code&gt;resources&lt;/code&gt; 資料夾底下分別有兩個資料夾：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;public&lt;/code&gt; - 靜態網頁放的地方，也是整個要作為 blog 內容上傳的資料夾&lt;/li&gt;&lt;li&gt;&lt;code&gt;templates&lt;/code&gt; - 所有的新增與修改都要在這個資料夾，透過 &lt;code&gt;lein ring server&lt;/code&gt; 將 blog 更新至 &lt;code&gt;public&lt;/code&gt; 後上傳&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;控制中心：config.edn&quot;&gt;&lt;/a&gt;控制中心：config.edn&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;&lt;code&gt;config.edn&lt;/code&gt; 檔案在 &lt;code&gt;resources/templates/&lt;/code&gt; 底下，內容為：&lt;/p&gt;&lt;pre&gt;&lt;code&gt;{:site-title       &amp;quot;Fat Finger ERR&amp;quot;
+ :author           &amp;quot;fatfingererr&amp;quot;
+ :description      &amp;quot;fatfingererr blog&amp;quot;
+ :site-url         &amp;quot;fatfingererr.github.io&amp;quot;
+ :post-root        &amp;quot;posts&amp;quot;
+ :tag-root         &amp;quot;tags&amp;quot;
+ :page-root        &amp;quot;pages&amp;quot;
+ :blog-prefix      &amp;quot;&amp;quot;
+ :rss-name         &amp;quot;feed.xml&amp;quot;
+ :recent-posts     5
+ :post-date-format &amp;quot;yyyy-MM-dd&amp;quot;
+ :sass-src         nil
+ :sass-dest        nil
+ :resources        &amp;#91;&amp;quot;css&amp;quot; &amp;quot;js&amp;quot; &amp;quot;images&amp;quot; &amp;quot;404.html&amp;quot; &amp;quot;README.md&amp;quot; &amp;quot;favicon.ico&amp;quot; &amp;quot;keybase.txt&amp;quot;&amp;#93;
+ :keep-files       &amp;#91;&amp;quot;.git&amp;quot;&amp;#93;
+ :disqus?          true
+ :disqus-shortname &amp;quot;fatfingererr&amp;quot; }
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; 基本上就和字面上的意思一樣，你可以根據你的需求修改，需要特別注意的是：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;:post-date-format&lt;/code&gt; 指的是你的每一篇部落格文章的標題要記得打的日期前餟的格式，打錯格式會無法轉 md 至 html&lt;/li&gt;&lt;li&gt;&lt;code&gt;:resources&lt;/code&gt; 包含的檔案才會從 &lt;code&gt;templates&lt;/code&gt; 轉到 &lt;code&gt;public&lt;/code&gt; 資料夾，像我有自己的圖示 &lt;code&gt;favicon.ico&lt;/code&gt; ，就要這樣子&lt;/li&gt;&lt;li&gt;我在 &lt;code&gt;:resources&lt;/code&gt; 中也包含了 &lt;code&gt;images&lt;/code&gt; 的原因，是因為部落格文章要用到的圖片我就用相對位址於文章中引用&lt;ul&gt;&lt;li&gt;例如：&lt;code&gt;&amp;lt;img src=&amp;quot;../images/cryogen-repo-struct.png&amp;quot; width=&amp;quot;100%&amp;quot;&amp;gt;&lt;/code&gt; 這樣&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;
+</description>
+<pubDate>
+Sun, 30 Oct 2016 00:00:00 +0800
+</pubDate>
+<author>
+fatfingererr
+</author>
+</item>
 </channel>
 </rss>
