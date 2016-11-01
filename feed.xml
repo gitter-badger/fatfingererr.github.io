@@ -15,11 +15,31 @@ fatfingererr.github.io
 fatfingererr blog
 </description>
 <lastBuildDate>
-Sun, 30 Oct 2016 11:46:00 +0800
+Tue, 01 Nov 2016 23:05:45 +0800
 </lastBuildDate>
 <author>
 fatfingererr
 </author>
+<item>
+<guid>
+fatfingererr.github.io/posts/2016-11-01-初探輕量級工具.html
+</guid>
+<link>
+fatfingererr.github.io/posts/2016-11-01-初探輕量級工具.html
+</link>
+<title>
+關於輕量級工具
+</title>
+<description>
+&lt;p&gt; &lt;br/&gt;&lt;/p&gt;&lt;p&gt; 由於本身工作的關係，大部份演算法都是由自己刻（Hard Coding）然後拼裝而得，這會導致欠下大量的技術債，我很清楚這個問題，這也是為什麼在資產管理行業中若有比較明顯的分工，研究工作和開發工作往往是分開的。研究人員負責數理模型的搭建，若模型能在研究人員的測試環境中得到初步的好成果，再來計算該模型能帶來的效益。   &lt;/p&gt;&lt;br /&gt;&lt;p&gt; 如果能帶來好的效益，例如在風險計算或是資產價格計算上有更佳的判斷能力，才會將程式碼與模型架構轉交給開發人員，由開發人員進行更有效率的開發，例如使得程式碼能進行平行運算、輸入輸出都從手動更改為自動化連結資料庫進行處理並加密，最後編寫對應的測試。   &lt;/p&gt;&lt;br /&gt;&lt;p&gt; 講起來簡單，做起來難，關鍵是在於你如何切割整個系統開發流程給兩個部門，基本上研究部門也還是會使用到基本的平行運算和混和開發，而開發人員也是會協助研究人員改善數理模型的設計，沒有這麼絕對。無論如何，至少對於研究人員來說，大部分會使用到的工具應該還是較偏向於輕量級的工具。   &lt;/p&gt;&lt;br /&gt;&lt;p&gt; 以前沒有這樣思考過，後來認識一些工程師才漸漸明白有個詞叫做「輕量級工具」，這也使得我開始思考自己工作上使用到的東西，是否算是輕量級工具呢？甚而關於輕量級怎麼定義呢？於是就著手開始了解，底下也就是我對於這個詞的一些認識，或許理解上仍有不足，歡迎提供你的意見。&lt;/p&gt;&lt;p&gt;&lt;hr/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;工具的量級&quot;&gt;&lt;/a&gt;工具的量級&lt;/h3&gt;&lt;p&gt;目前我了解到的，工具的量級似乎可以簡單分成兩者：&lt;/p&gt;&lt;ol&gt;&lt;li&gt;重量級工具 - 追求高擴展性，能迅速擴大工具使用與影響的層面，又能兼顧安全與效能。&lt;/li&gt;&lt;li&gt;輕量級工具 - 追求快速開發解決問題，能在時間與資源的各種限制下完成開發需求。&lt;/li&gt;&lt;/ol&gt;&lt;br /&gt;&lt;p&gt;區分兩個工具的關鍵，在於工具的粒度，那麼粒度的粗細怎麼衡量：&lt;/p&gt;&lt;ol&gt;&lt;li&gt;工具的對象 - 細粒度的工具以單一對象為主&lt;/li&gt;&lt;li&gt;工具的解耦模式 - 細粒度的工具以相依性注入（Dependency Injection, DI）方式解耦&lt;/li&gt;&lt;li&gt;工具對運行環境的需求 - 細粒度的工具使得工具和使用工具的環境沒有太大的關聯，易於插拔（Running Anywhere）&lt;/li&gt;&lt;li&gt;運行環境對工具的控制 - 細粒度的工具提供反向控制（Inversion of Control, IoC）讓運行環境可以管理工具&lt;/li&gt;&lt;li&gt;工具啟動所需的資源 - 細粒度的工具不需要加載過多的依賴來啟動。&lt;/li&gt;&lt;li&gt;工具的侵入性 - 細粒度的工具不會過度要求開發者套用特定框架的類（Class），以免難以測試。&lt;/li&gt;&lt;li&gt;工具運行的生命週期 - 細粒度的工具運行時，生命週期會十分清楚，使得容易組合工具到更大的系統。&lt;/li&gt;&lt;/ol&gt;&lt;br /&gt;&lt;p&gt;重量級工具原則上應該是也要具備輕量級工具的優勢，然而往往：&lt;/p&gt;&lt;ol&gt;&lt;li&gt;佈署流程複雜，系統運行緩慢&lt;/li&gt;&lt;li&gt;系統內在彼此太多互相依賴，啟動時間長&lt;/li&gt;&lt;li&gt;系統需要設定好許多規則才能運行，自由空間小&lt;/li&gt;&lt;li&gt;難以除錯（Bebug）&lt;/li&gt;&lt;/ol&gt;&lt;br /&gt;&lt;p&gt;因此也有一說是，輕量級工具並非是對重量級工具的否定，而是一個互補的關係。此外，輕量級工具多數也是開放原始碼的專案，利於跨專案整合並快速開發，儘管如此，輕量級工具仍然有些缺點，例如太過考慮短期的需求，導致長期下來最終要大量的修正、重構與優化。&lt;/p&gt;&lt;br /&gt;&lt;p&gt;對於這一點，至少在自己工作上目前就是盡可能地把技術債，在研究部門和開發部門兩者之間去做平衡，不要讓開發部門拿到設計圖想死、也不讓研究部門處處受開發限制想撞牆。&lt;/p&gt;&lt;p&gt;&lt;hr/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;自己的功課&quot;&gt;&lt;/a&gt;自己的功課&lt;/h3&gt;&lt;h4&gt;&lt;a name=&quot;dependency&amp;#95;injection&quot;&gt;&lt;/a&gt;Dependency Injection&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;閱讀 &lt;a href='http://huan-lin.blogspot.com/2011/10/dependency-injection-1.html'&gt;Dependency Injection 筆記&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://jaceju.net/2014-07-27-php-di-container/'&gt;理解 Dependency Injection 實作原理&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://computer.jges.mlc.edu.tw/index.php/zend-framework-2/76-di-dependency-injection'&gt;DI(Dependency Injection)&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://ithelp.ithome.com.tw/articles/10141708'&gt;相依性注入(Dependency Injection)的一點點心得&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://blog.rangilin.idv.tw/dependency-injection/'&gt;Dependency Injection&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://openhome.cc/Gossip/SpringGossip/DI.html'&gt;Dependency Injection&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://blog.xuite.net/snowtech/blog/204127986-Dependency+Injection'&gt;Dependency Injection&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://garyliutw.blogspot.tw/2013/06/ioc-dependency-injection&amp;#95;27.html'&gt;轉載 IoC 容器和 Dependency Injection 模式&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://mmpud.logdown.com/posts/210242-dependency-injection'&gt;General Dependency Injection&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://abgne.tw/angularjs/angularjs-getting-stared/inject.html'&gt;AngularJS 入門教學 - $inject&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;h4&gt;&lt;a name=&quot;inversion&amp;#95;of&amp;#95;control&quot;&gt;&lt;/a&gt;Inversion of Control&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;閱讀 &lt;a href='https://www.wikiwand.com/zh-tw/%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC'&gt;控制反轉&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='https://dotblogs.com.tw/joysdw12/archive/2012/11/26/85081.aspx'&gt;.NET 實作工廠模式、 IoC (Inversion of Control) 與 DI (Depedency Injection)&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://blog.developer.idv.tw/2014/05/ioc-di.html'&gt;IOC 控制反轉 &amp; DI 依賴注入&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://openhome.cc/Gossip/SpringGossip/IOC.html'&gt;Inversion of Control&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://sunskynote.blogspot.tw/2016/01/inversion-of-control.html'&gt;Inversion of Control 控制反轉&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://ithelp.ithome.com.tw/articles/10156571'&gt;IoC基本概念介紹&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://www.petekcchen.com/2011/04/inversion-of-control-pattern.html'&gt;可抽換元件設計模式 - IoC Pattern&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; &lt;br/&gt;&lt;/p&gt;
+</description>
+<pubDate>
+Tue, 01 Nov 2016 00:00:00 +0800
+</pubDate>
+<author>
+fatfingererr
+</author>
+</item>
 <item>
 <guid>
 fatfingererr.github.io/posts/2016-10-30-以cryogen搭建個人部落格.html
