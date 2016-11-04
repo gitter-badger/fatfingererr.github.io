@@ -15,11 +15,69 @@ fatfingererr.github.io
 fatfingererr blog
 </description>
 <lastBuildDate>
-Tue, 01 Nov 2016 23:05:45 +0800
+Fri, 04 Nov 2016 23:54:05 +0800
 </lastBuildDate>
 <author>
 fatfingererr
 </author>
+<item>
+<guid>
+fatfingererr.github.io/posts/2016-11-04-在 cryogen 中使用 MathJax 顯示數學公式.html
+</guid>
+<link>
+fatfingererr.github.io/posts/2016-11-04-在 cryogen 中使用 MathJax 顯示數學公式.html
+</link>
+<title>
+在 cryogen 中使用 MathJax 顯示數學公式
+</title>
+<description>
+&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt; 由於不久之前在使用 &lt;a href='https://github.com/coldnew/org-ioslide'&gt;org-ioslide&lt;/a&gt; 時，使用到了 MathJax 這個在網頁上以 LaTeX 方式顯示數學公式的套件，覺得很好用。於是今天就在思考說，有沒有辦法也在 cryogen 中使用呢？由於不太了解網頁設計，於是只好摸索了一下，最終終於搞定了。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt; 首先，你得要有 MathJax 的整個 js 套件。&lt;/p&gt;&lt;p&gt; 在這邊我們使用簡單版不佔空間的 623KB MathJax 套件：&lt;a href='https://github.com/tiborsimon/mathjax-minimal-package'&gt;tiborsimon/mathjax-minimal-package&lt;/a&gt;&lt;/p&gt;&lt;p&gt; 假如你已經在 &lt;a href='posts/2016-10-30-以cryogen搭建個人部落格.html'&gt;cryogen-blog&lt;/a&gt; 目錄裡：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;git clone https://github.com/tiborsimon/mathjax-minimal-package.git resources/templates/js
+&lt;/code&gt;&lt;/pre&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;調整&amp;#95;cryogen&amp;#95;中的網頁模板&quot;&gt;&lt;/a&gt;調整 cryogen 中的網頁模板&lt;/h3&gt;&lt;p&gt; 打開 &lt;code&gt;resources/templates/html/layouts&lt;/code&gt; 你會看到兩個檔案：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;base.html&lt;/li&gt;&lt;li&gt;base-with-navbar.html&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;  &lt;/p&gt;&lt;p&gt;這兩個檔案主要是作為 cryogen 網頁生成的基本模板，所以我們要在這兩個模板中加入 mathjax 的使用&lt;/p&gt;&lt;p&gt;  因此，打開 &lt;code&gt;resources/templates/html/layouts/base.html&lt;/code&gt; 在內容上方處尋找並新增 ：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;html&quot;&gt;...
+{% style &amp;quot;css/screen.css&amp;quot; %}
+{% style &amp;quot;css/bootswatch.css&amp;quot; %}
+&amp;lt;!-- 請插入下方這行於此 --&amp;gt;
+&amp;lt;script type=&amp;quot;text/javascript&amp;quot; async  src=&amp;quot;js/mathjax/MathJax.js?config=TeX-AMS&amp;#95;CHTML&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+&amp;lt;!-- 請插入上方這行於此 --&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+&amp;lt;nav class=&amp;quot;navbar navbar-default navbar-fixed-top&amp;quot; role=&amp;quot;navigation&amp;quot;&amp;gt;
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;接著在內容最末處尋找並新增：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;html&quot;&gt;...
+&amp;lt;!-- 請插入下方這段於此 --&amp;gt;
+&amp;lt;script type=&amp;quot;text/x-mathjax-config&amp;quot;&amp;gt;
+    MathJax.Hub.Config&amp;#40;{
+        &amp;quot;CommonHTML&amp;quot;: {
+        scale: 100
+        }
+    }&amp;#41;;
+&amp;lt;/script&amp;gt;
+&amp;lt;!-- 請插入上方這段於此 --&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;這邊的 &lt;code&gt;scale: 100&lt;/code&gt; 你可以改成任何的大小，會影響你的 LaTeX 方程式在網頁上呈現的相對大小。&lt;/p&gt;&lt;p&gt;注意！在  &lt;code&gt;resources/templates/html/layouts/base-with-navbar.html&lt;/code&gt; 也是一樣要分別在檔案起始和末尾處做這樣的修改。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;在部落格文章中使用&quot;&gt;&lt;/a&gt;在部落格文章中使用&lt;/h3&gt;&lt;p&gt; 在 markdown 使用基本上沒什麼問題，你只需要用 &lt;code&gt;$$&lt;/code&gt; 符號前後包住 LaTeX 方程式就可以了：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;markdown&quot;&gt;$$\begin{align}
+\begin{bmatrix}
+\color{blue}1 &amp;amp; 0 &amp;amp; 0 \\\\
+0 &amp;amp; \color{blue}1 &amp;amp; 0 \\\\
+0 &amp;amp; 0 &amp;amp; \color{blue}1
+\end{bmatrix} \cdot \begin{bmatrix}
+\color{red}1 &amp;amp; 0 &amp;amp; 0 \\\\
+0 &amp;amp; \color{red}1 &amp;amp; 0 \\\\
+0 &amp;amp; 0 &amp;amp; \color{red}1
+\end{bmatrix} = \begin{bmatrix}
+\color{green}1 &amp;amp; 0 &amp;amp; 0 \\\\
+0 &amp;amp; \color{green}1 &amp;amp; 0 \\\\
+0 &amp;amp; 0 &amp;amp; \color{green}1
+\end{bmatrix}
+\end{align}$$
+&lt;/code&gt;&lt;/pre&gt;&lt;br/&gt;&lt;p&gt;這邊提到幾點【注意】：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;首先頭尾 LaTeX 方程式的 &lt;code&gt;$$&lt;/code&gt; 盡量後面就直接接方程式，不要換行，避免一些可能出問題的情況&lt;/li&gt;&lt;li&gt;如果要用到 LaTeX 中的方程式的換行 &amp;#92;&amp;#92; (尤其是表達矩陣) 建議用 &amp;#92;&amp;#92;&amp;#92;&amp;#92; 也就是用四個斜槓&lt;ul&gt;&lt;li&gt;因為在 markdown 轉 html 會吃掉 &amp;#92;&amp;#92; 變成 &lt;code&gt;&amp;amp;#92;&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; 依照上面那段 LaTeX 方程式，看起來就會像這樣：&lt;/p&gt;&lt;p&gt;$$\begin{align} \begin{bmatrix} \color{blue}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{blue}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{blue}1 \end{bmatrix} \cdot \begin{bmatrix} \color{red}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{red}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{red}1 \end{bmatrix} = \begin{bmatrix} \color{green}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{green}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{green}1 \end{bmatrix} \end{align}$$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 有時候可能會手誤，你可能要檢查一下你有沒有什麼空白行，或是空白元不小心用到方程式裡面或前後&lt;/p&gt;
+</description>
+<pubDate>
+Fri, 04 Nov 2016 00:00:00 +0800
+</pubDate>
+<author>
+fatfingererr
+</author>
+</item>
 <item>
 <guid>
 fatfingererr.github.io/posts/2016-11-01-初探輕量級工具.html
