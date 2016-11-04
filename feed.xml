@@ -15,7 +15,7 @@ fatfingererr.github.io
 fatfingererr blog
 </description>
 <lastBuildDate>
-Fri, 04 Nov 2016 23:54:05 +0800
+Sat, 05 Nov 2016 00:05:04 +0800
 </lastBuildDate>
 <author>
 fatfingererr
@@ -54,7 +54,8 @@ fatfingererr.github.io/posts/2016-11-04-在 cryogen 中使用 MathJax 顯示數�
 &amp;lt;!-- 請插入上方這段於此 --&amp;gt;
 &amp;lt;/body&amp;gt;
 &amp;lt;/html&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;這邊的 &lt;code&gt;scale: 100&lt;/code&gt; 你可以改成任何的大小，會影響你的 LaTeX 方程式在網頁上呈現的相對大小。&lt;/p&gt;&lt;p&gt;注意！在  &lt;code&gt;resources/templates/html/layouts/base-with-navbar.html&lt;/code&gt; 也是一樣要分別在檔案起始和末尾處做這樣的修改。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;在部落格文章中使用&quot;&gt;&lt;/a&gt;在部落格文章中使用&lt;/h3&gt;&lt;p&gt; 在 markdown 使用基本上沒什麼問題，你只需要用 &lt;code&gt;$$&lt;/code&gt; 符號前後包住 LaTeX 方程式就可以了：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;markdown&quot;&gt;$$\begin{align}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;這邊的 &lt;code&gt;scale: 100&lt;/code&gt; 你可以改成任何的大小，會影響你的 LaTeX 方程式在網頁上呈現的相對大小。&lt;/p&gt;&lt;p&gt;注意！在  &lt;code&gt;resources/templates/html/layouts/base-with-navbar.html&lt;/code&gt; 也是一樣要分別在檔案起始和末尾處做這樣的修改。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;在部落格文章中使用&quot;&gt;&lt;/a&gt;在部落格文章中使用&lt;/h3&gt;&lt;p&gt; 在 markdown 使用基本上沒什麼問題，你只需要用 &lt;code&gt;&amp;lt;div&amp;gt;&lt;/code&gt; 和 &lt;code&gt;$$&lt;/code&gt; 符號前後包住 LaTeX 方程式就可以了：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;markdown&quot;&gt;&amp;lt;div&amp;gt;
+$$\begin{align}
 \begin{bmatrix}
 \color{blue}1 &amp;amp; 0 &amp;amp; 0 \\\\
 0 &amp;amp; \color{blue}1 &amp;amp; 0 \\\\
@@ -69,7 +70,8 @@ fatfingererr.github.io/posts/2016-11-04-在 cryogen 中使用 MathJax 顯示數�
 0 &amp;amp; 0 &amp;amp; \color{green}1
 \end{bmatrix}
 \end{align}$$
-&lt;/code&gt;&lt;/pre&gt;&lt;br/&gt;&lt;p&gt;這邊提到幾點【注意】：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;首先頭尾 LaTeX 方程式的 &lt;code&gt;$$&lt;/code&gt; 盡量後面就直接接方程式，不要換行，避免一些可能出問題的情況&lt;/li&gt;&lt;li&gt;如果要用到 LaTeX 中的方程式的換行 &amp;#92;&amp;#92; (尤其是表達矩陣) 建議用 &amp;#92;&amp;#92;&amp;#92;&amp;#92; 也就是用四個斜槓&lt;ul&gt;&lt;li&gt;因為在 markdown 轉 html 會吃掉 &amp;#92;&amp;#92; 變成 &lt;code&gt;&amp;amp;#92;&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; 依照上面那段 LaTeX 方程式，看起來就會像這樣：&lt;/p&gt;&lt;p&gt;$$\begin{align} \begin{bmatrix} \color{blue}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{blue}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{blue}1 \end{bmatrix} \cdot \begin{bmatrix} \color{red}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{red}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{red}1 \end{bmatrix} = \begin{bmatrix} \color{green}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{green}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{green}1 \end{bmatrix} \end{align}$$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 有時候可能會手誤，你可能要檢查一下你有沒有什麼空白行，或是空白元不小心用到方程式裡面或前後&lt;/p&gt;
+&amp;lt;div/&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;br/&gt;&lt;p&gt;這邊提到幾點【注意】：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;首先頭尾 LaTeX 方程式的 &lt;code&gt;$$&lt;/code&gt; 盡量後面就直接接方程式，不要換行，避免一些可能出問題的情況&lt;/li&gt;&lt;li&gt;如果要用到 LaTeX 中的方程式的換行 &amp;#92;&amp;#92; (尤其是表達矩陣) 建議用 &amp;#92;&amp;#92;&amp;#92;&amp;#92; 也就是用四個斜槓&lt;ul&gt;&lt;li&gt;因為在 markdown 轉 html 會吃掉 &amp;#92;&amp;#92; 變成 &lt;code&gt;&amp;amp;#92;&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; 依照上面那段 LaTeX 方程式，看起來就會像這樣：&lt;/p&gt;&lt;p&gt;&lt;div&gt; $$\begin{align} \begin{bmatrix} \color{blue}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{blue}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{blue}1 \end{bmatrix} \cdot \begin{bmatrix} \color{red}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{red}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{red}1 \end{bmatrix} = \begin{bmatrix} \color{green}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{green}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{green}1 \end{bmatrix} \end{align}$$ &lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 有時候可能會手誤，你可能要檢查一下你有沒有什麼空白行，或是空白元不小心用到方程式裡面或前後&lt;/p&gt;
 </description>
 <pubDate>
 Fri, 04 Nov 2016 00:00:00 +0800

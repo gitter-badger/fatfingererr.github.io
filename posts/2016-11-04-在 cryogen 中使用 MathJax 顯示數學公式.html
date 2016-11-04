@@ -82,7 +82,8 @@
 &lt;!-- 請插入上方這段於此 --&gt;
 &lt;/body&gt;
 &lt;/html&gt;
-</code></pre><p>這邊的 <code>scale: 100</code> 你可以改成任何的大小，會影響你的 LaTeX 方程式在網頁上呈現的相對大小。</p><p>注意！在  <code>resources/templates/html/layouts/base-with-navbar.html</code> 也是一樣要分別在檔案起始和末尾處做這樣的修改。</p><p><br/></p><h3><a name="在部落格文章中使用"></a>在部落格文章中使用</h3><p> 在 markdown 使用基本上沒什麼問題，你只需要用 <code>$$</code> 符號前後包住 LaTeX 方程式就可以了：</p><pre><code class="markdown">$$\begin{align}
+</code></pre><p>這邊的 <code>scale: 100</code> 你可以改成任何的大小，會影響你的 LaTeX 方程式在網頁上呈現的相對大小。</p><p>注意！在  <code>resources/templates/html/layouts/base-with-navbar.html</code> 也是一樣要分別在檔案起始和末尾處做這樣的修改。</p><p><br/></p><h3><a name="在部落格文章中使用"></a>在部落格文章中使用</h3><p> 在 markdown 使用基本上沒什麼問題，你只需要用 <code>&lt;div&gt;</code> 和 <code>$$</code> 符號前後包住 LaTeX 方程式就可以了：</p><pre><code class="markdown">&lt;div&gt;
+$$\begin{align}
 \begin{bmatrix}
 \color{blue}1 &amp; 0 &amp; 0 \\\\
 0 &amp; \color{blue}1 &amp; 0 \\\\
@@ -97,7 +98,8 @@
 0 &amp; 0 &amp; \color{green}1
 \end{bmatrix}
 \end{align}$$
-</code></pre><br/><p>這邊提到幾點【注意】：</p><ul><li>首先頭尾 LaTeX 方程式的 <code>$$</code> 盡量後面就直接接方程式，不要換行，避免一些可能出問題的情況</li><li>如果要用到 LaTeX 中的方程式的換行 &#92;&#92; (尤其是表達矩陣) 建議用 &#92;&#92;&#92;&#92; 也就是用四個斜槓<ul><li>因為在 markdown 轉 html 會吃掉 &#92;&#92; 變成 <code>&amp;#92;</code></li></ul></li></ul><p><br/> 依照上面那段 LaTeX 方程式，看起來就會像這樣：</p><p>$$\begin{align} \begin{bmatrix} \color{blue}1 & 0 & 0 &#92;&#92; 0 & \color{blue}1 & 0 &#92;&#92; 0 & 0 & \color{blue}1 \end{bmatrix} \cdot \begin{bmatrix} \color{red}1 & 0 & 0 &#92;&#92; 0 & \color{red}1 & 0 &#92;&#92; 0 & 0 & \color{red}1 \end{bmatrix} = \begin{bmatrix} \color{green}1 & 0 & 0 &#92;&#92; 0 & \color{green}1 & 0 &#92;&#92; 0 & 0 & \color{green}1 \end{bmatrix} \end{align}$$</p><p><br/> 有時候可能會手誤，你可能要檢查一下你有沒有什麼空白行，或是空白元不小心用到方程式裡面或前後</p>
+&lt;div/&gt;
+</code></pre><br/><p>這邊提到幾點【注意】：</p><ul><li>首先頭尾 LaTeX 方程式的 <code>$$</code> 盡量後面就直接接方程式，不要換行，避免一些可能出問題的情況</li><li>如果要用到 LaTeX 中的方程式的換行 &#92;&#92; (尤其是表達矩陣) 建議用 &#92;&#92;&#92;&#92; 也就是用四個斜槓<ul><li>因為在 markdown 轉 html 會吃掉 &#92;&#92; 變成 <code>&amp;#92;</code></li></ul></li></ul><p><br/> 依照上面那段 LaTeX 方程式，看起來就會像這樣：</p><p><div> $$\begin{align} \begin{bmatrix} \color{blue}1 & 0 & 0 &#92;&#92; 0 & \color{blue}1 & 0 &#92;&#92; 0 & 0 & \color{blue}1 \end{bmatrix} \cdot \begin{bmatrix} \color{red}1 & 0 & 0 &#92;&#92; 0 & \color{red}1 & 0 &#92;&#92; 0 & 0 & \color{red}1 \end{bmatrix} = \begin{bmatrix} \color{green}1 & 0 & 0 &#92;&#92; 0 & \color{green}1 & 0 &#92;&#92; 0 & 0 & \color{green}1 \end{bmatrix} \end{align}$$ </div></p><p><br/> 有時候可能會手誤，你可能要檢查一下你有沒有什麼空白行，或是空白元不小心用到方程式裡面或前後</p>
     </div>
     
     <div id="tags">
