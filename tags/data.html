@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta charset="utf-8"/>
-        <title> Fat Finger ERR  - Windows 執行 boot 遇到 Exception in thread main 的辦法 </title>
+        <title> Fat Finger ERR  - 標籤 &quot;data&quot; </title>
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
         <link rel="fatfingererr icon" href="http://www.ffe.tw/favicon.ico" type="image/x-icon" />
@@ -49,63 +49,19 @@
             <div class="col-md-11">
                 <div id="content">
                 
-<div id="post">
-        <div id="post-header">
-        <h2>Windows 執行 boot 遇到 Exception in thread main 的辦法</h2>
-        <div id="post-meta">
-            
-            <div class="date">2016年11月6日</div>
-        </div>
+<div id="posts-by-tag">
+    <div id="page-header">
+        <h2>標籤 &quot; data &quot;</h2>
     </div>
-    <div>
-        
-        <p> <br/> 由於在 Windows 中 <code>boot.exe</code> 是以一個執行檔的方式存在</p><p>如果你沒有把他移到 <code>C:\Windows</code> 中很有可能不小心把它弄不見</p><p>導致你在 <code>cmd</code> 無法執行 <code>boot</code> 指令，但是因為你曾經執行過 <code>boot</code> </p><p>所以你的使用者資料夾中還是有一個資料夾 <code>.boot</code> 此時如果你又重新去下載了一次 <code>boot.exe</code> </p><p>有時候會發生執行失敗，得到如下的錯誤指令：</p><p><br/><pre><code class="bash">Exception in thread &quot;main&quot; java.lang.reflect.InvocationTargetException
-...
-...
- </code></pre></p><p><br/> 此時你只需要移除掉 <code>.boot</code> 的資料夾（可能會花一些時間）</p><p>再重新把 <code>boot.exe</code> 放進 Windows 資料夾</p><p>並在打算執行 boot 的專案目錄下，執行 <strong>【兩次】</strong> <code>boot dev</code> 指令就可以了：</p><pre><code class="bash">cd C:\Users\ &#91;User&#93;
-rm rf .boot
-cd &#91;project&#93;
-boot dev
-... 開始重新下載
-boot dev
-... 正式執行
-</code></pre><p><br/> 本篇參考<a href='https://github.com/boot-clj/boot'>boot-clj/boot</a> 中 2016/5 回報的 Issue <a href='https://github.com/boot-clj/boot/issues/467'>brew version does not work #467</a> 的解決方法</p><p><br/> 如果你有遇到這個問題，但不是這樣的解法，也歡迎分享哦！</p>
-    </div>
+    <p> 你也可以至 <a target="_blank" href="https://encrypted.google.com/#q=data"> Google 搜尋 data</a> 得到更多其他資訊</p>
+    <hr/>
+    <ul>
     
-    <div id="tags">
-        <b>Tags: </b>
-        
-        <a href="/tags/clojure.html">clojure</a>
-        
-        <a href="/tags/boot.html">boot</a>
-        
-    </div>
+        <li>
+            <a href="/posts/2016-11-07-萬事皆可弊_狄雷克雷分布於資料預處理的運用.html">萬事皆可弊：狄雷克雷分布於資料預處理的運用</a>
+        </li>
     
-
-    <div id="prev-next">
-        
-        <a href="/posts/2016-11-07-萬事皆可弊_狄雷克雷分布於資料預處理的運用.html">&laquo; 萬事皆可弊：狄雷克雷分布於資料預處理的運用</a>
-        
-        
-        ||
-        
-        
-        <a href="/posts/2016-11-05-認識對稱分析與膠解.html">認識對稱分析與膠解 &raquo;</a>
-        
-    </div>
-
-    
-    <div id="disqus_thread"></div>
-    <script type="text/javascript">
-        (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = '//fatfingererr.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-    </script>
-    
-
-
+    </ul>
 </div>
 
                 </div>
