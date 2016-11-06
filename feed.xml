@@ -15,11 +15,41 @@ fatfingererr.github.io
 fatfingererr blog
 </description>
 <lastBuildDate>
-Sun, 06 Nov 2016 12:05:52 +0800
+Sun, 06 Nov 2016 20:44:08 +0800
 </lastBuildDate>
 <author>
 fatfingererr
 </author>
+<item>
+<guid>
+fatfingererr.github.io/posts/2016-11-06-Windows執行boot遇到Exception_in_thread_main的辦法.html
+</guid>
+<link>
+fatfingererr.github.io/posts/2016-11-06-Windows執行boot遇到Exception_in_thread_main的辦法.html
+</link>
+<title>
+Windows 執行 boot 遇到 Exception in thread main 的辦法
+</title>
+<description>
+&lt;p&gt; &lt;br/&gt; 由於在 Windows 中 &lt;code&gt;boot.exe&lt;/code&gt; 是以一個執行檔的方式存在&lt;/p&gt;&lt;p&gt;如果你沒有把他移到 &lt;code&gt;C:\Windows&lt;/code&gt; 中很有可能不小心把它弄不見&lt;/p&gt;&lt;p&gt;導致你在 &lt;code&gt;cmd&lt;/code&gt; 無法執行 &lt;code&gt;boot&lt;/code&gt; 指令，但是因為你曾經執行過 &lt;code&gt;boot&lt;/code&gt; &lt;/p&gt;&lt;p&gt;所以你的使用者資料夾中還是有一個資料夾 &lt;code&gt;.boot&lt;/code&gt; 此時如果你又重新去下載了一次 &lt;code&gt;boot.exe&lt;/code&gt; &lt;/p&gt;&lt;p&gt;有時候會發生執行失敗，得到如下的錯誤指令：&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;Exception in thread &amp;quot;main&amp;quot; java.lang.reflect.InvocationTargetException
+...
+...
+ &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 此時你只需要移除掉 &lt;code&gt;.boot&lt;/code&gt; 的資料夾（可能會花一些時間）&lt;/p&gt;&lt;p&gt;再重新把 &lt;code&gt;boot.exe&lt;/code&gt; 放進 Windows 資料夾&lt;/p&gt;&lt;p&gt;並在打算執行 boot 的專案目錄下，執行 &lt;strong&gt;【兩次】&lt;/strong&gt; &lt;code&gt;boot dev&lt;/code&gt; 指令就可以了：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;cd C:\Users\ &amp;#91;User&amp;#93;
+rm rf .boot
+cd &amp;#91;project&amp;#93;
+boot dev
+... 開始重新下載
+boot dev
+... 正式執行
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;br/&gt; 本篇參考&lt;a href='https://github.com/boot-clj/boot'&gt;boot-clj/boot&lt;/a&gt; 中 2016/5 回報的 Issue &lt;a href='https://github.com/boot-clj/boot/issues/467'&gt;brew version does not work #467&lt;/a&gt; 的解決方法&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 如果你有遇到這個問題，但不是這樣的解法，也歡迎分享哦！&lt;/p&gt;
+</description>
+<pubDate>
+Sun, 06 Nov 2016 00:00:00 +0800
+</pubDate>
+<author>
+fatfingererr
+</author>
+</item>
 <item>
 <guid>
 fatfingererr.github.io/posts/2016-11-05-認識對稱分析與膠解.html
