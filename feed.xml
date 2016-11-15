@@ -15,11 +15,31 @@ fatfingererr.github.io
 fatfingererr blog
 </description>
 <lastBuildDate>
-Tue, 15 Nov 2016 00:10:12 +0800
+Wed, 16 Nov 2016 01:09:10 +0800
 </lastBuildDate>
 <author>
 fatfingererr
 </author>
+<item>
+<guid>
+fatfingererr.github.io/posts/2016-11-15-類神經網路的設計模式.html
+</guid>
+<link>
+fatfingererr.github.io/posts/2016-11-15-類神經網路的設計模式.html
+</link>
+<title>
+類神經網路的設計模式
+</title>
+<description>
+&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt; 為什麼想寫類神經網路的設計模式呢？一方面是從 2015 年起，很多關於類神經網路的架構設計的學術文章陸續出現，因此去年 2015 我就零星在追蹤這些文章，另一方面，是最近看到一篇比較詳細綜述類型的文章，因此想把這個新東西帶給大家，本篇文章主要參考 2016-11 在 arXiv 的 &lt;a href='https://arxiv.org/abs/1611.00847v3'&gt;Deep Convolutional Neural Network Design Patterns&lt;/a&gt; 考古請見前方連結，中文翻譯可見 &lt;a href='http://it.sohu.com/20161105/n472379311.shtml'&gt;解析深度卷积神经网络的14种设计模式&lt;/a&gt; 然而翻譯並沒有考古文獻，請留心 &lt;/p&gt;&lt;/blockquote&gt;&lt;blockquote&gt;&lt;p&gt; 本文內容部分沒有嚴謹依據參考模型進行表示，為求簡單易懂還請見諒。 &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;類神經網路的設計模式&quot;&gt;&lt;/a&gt;類神經網路的設計模式&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 對於進行混合式類神經網路開發的人而言，我們其實在架構上十分的自由，我們想在任何一層、任何一個神經元去做任何事情，都不會有難度。但是難的是在是否對於我們各自想解決的問題，有個普遍共通性的架構設計可以參考？這是我從 2014 就在想的問題，我到現在還沒有想得很清楚，不過或許有幾個點值得注意。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 這些點普遍來自於深度學習的反思，因為深度學習比起傳統的類神經網路更需要細膩的架構設計，在深度學習變得超夯之後，不難想像早晚都要有人解決這個問題。只是沒想到在 ICLR 2017 就有還算完備又淺顯易懂的文章，作者將重點放在卷積類神經網路但是不影響我們思考問題，無論如何讓我們來看一下 14 個設計要點（打＊號為本部落格文章會提到）：&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;ol&gt;&lt;li&gt;架構結構遵循應用（Architectural Structure follows the Application）&lt;/li&gt;&lt;li&gt;&lt;strong&gt;擴增路徑（Proliferate Paths）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;保持簡約（Strive for Simplicity）&lt;/li&gt;&lt;li&gt;&lt;strong&gt;提升對稱性（Increase Symmetry）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;金字塔形狀（Pyramid Shape）&lt;/li&gt;&lt;li&gt;過擬合（Over-training）&lt;/li&gt;&lt;li&gt;覆蓋問題空間（Cover the Problem Space）&lt;/li&gt;&lt;li&gt;&lt;strong&gt;建構漸進式特徵（Incremental Feature Construction）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;&lt;strong&gt;各層輸入正規化（Normalize layer inputs）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;轉換輸入（Input Transition）&lt;/li&gt;&lt;li&gt;可用資源決定網路深度（Available resources guide Network Depth）&lt;/li&gt;&lt;li&gt;&lt;strong&gt;總和合併分支（Summation Joining）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;縮減取樣轉換（Down-sampling Transition）&lt;/li&gt;&lt;li&gt;以 Maxout 處理競爭（Maxout for Competition）保持不變性&lt;/li&gt;&lt;/ol&gt;&lt;br/&gt;在本部落格文章中只會特別介紹幾種個人認為比較廣泛、可以類比到多數類神經網路的設計模式，這不意味著我不採用本篇文章中提到的深度學習專門的設計模式，而是仍靜待更完整、完備的設計模式的討論，對於我個人而言，底下提到的幾種設計模式，能更快的被我應用於近期要解決的問題。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;hr/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;設計模式&amp;#95;02&amp;#95;-&amp;#95;擴增路徑&amp;#95;proliferate&amp;#95;paths&quot;&gt;&lt;/a&gt;設計模式 02 - 擴增路徑 Proliferate Paths&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;如果仔細觀察 &lt;a href='http://image-net.org/'&gt;ImageNet 挑戰賽&lt;/a&gt; 的 &lt;a href='https://www.microsoft.com/zh-cn/ard/news/newsinfo.aspx?newsid=news&amp;#95;2016&amp;#95;02'&gt;獲獎者&lt;/a&gt;，你會發現大家使用的類神經網路深度不斷加深，除此之外還有一個重要趨勢：每一個神經元往後接出去的路徑往往都是倍增的：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-1.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;hr/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;設計模式&amp;#95;04&amp;#95;-&amp;#95;提升對稱性&amp;#95;increase&amp;#95;symmetry&quot;&gt;&lt;/a&gt;設計模式 04 - 提升對稱性 Increase Symmetry&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;提升對稱性的設計模式，想法主要是來自於 FractalNet（碎形網路）的設計&lt;/p&gt;&lt;p&gt;FractalNet 具有很不錯的對稱性，讓我們來看張碎形：&lt;/p&gt;&lt;p&gt;&lt;center&gt;&lt;img src=&quot;../images/類神經網路的設計模式-2.jpg&quot; width=&quot;50%&quot;&gt; &lt;br/&gt;圖片來源：&lt;a href='https://commons.wikimedia.org/wiki/File:Mandel&amp;#95;zoom&amp;#95;00&amp;#95;mandelbrot&amp;#95;set.jpg'&gt;維基多媒體 Wikimedia (GNU自由文件授權)&lt;/a&gt;&lt;/center&gt; &lt;br/&gt;&lt;/p&gt;&lt;p&gt;那到底在類神經網路中，這種對稱性表現在哪裡呢？&lt;/p&gt;&lt;p&gt;讓我們來看一下碎形的網路架構：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-3.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;是不是有一種碎形的感覺呢？&lt;/p&gt;&lt;p&gt;這邊要特別注意到，碎形網路的對稱性是從左至右&lt;/p&gt;&lt;p&gt;而從上而下的對稱性是比較常見的，也是前面提到的設計模式 02 擴增路徑的方法&lt;/p&gt;&lt;p&gt;雖然碎形網路從上而下沒有對稱性，但仍然具備了擴增路徑的設計模式：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-4.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;hr/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;設計模式&amp;#95;08&amp;#95;-&amp;#95;建構漸進式特徵&amp;#95;incremental&amp;#95;feature&amp;#95;construction&quot;&gt;&lt;/a&gt;設計模式 08 - 建構漸進式特徵 Incremental Feature Construction&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;什麼叫做漸進式的特徵呢？在深度學習裡面我們每一層的輸出，基本上可以看做是不同層次的特徵。越深層次的網路輸出，通常也就是越高層次的抽象特徵，這些特徵的建構原則上不能太過跳躍（skip），才能使得特徵具有漸進式的建構路徑。	&lt;/p&gt;&lt;p&gt;讓我們來看一個跳躍式的特徵建構：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-5.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;關於跳躍的討論，其實牽涉到一篇我覺寫得非常讚的今年（2016）年中的論文 &lt;a href='https://arxiv.org/pdf/1610.01644v3.pdf'&gt;Understanding intermediate layers using linear classifier probes&lt;/a&gt; 這篇特別關注的是類神將網路中每一層的神經元到底為結果貢獻了什麼？找時間再分享吧（TODO - 文章方法結合啟發式演算法的實務應用）&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;hr/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;設計模式&amp;#95;12&amp;#95;-&amp;#95;總和合併分支&amp;#95;summation&amp;#95;joining&quot;&gt;&lt;/a&gt;設計模式 12 - 總和合併分支 Summation Joining&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;合併分支的方法設計也很重要，如果在深度學習中我們常用的是串聯（concatenation）、求和（Summation Join）、平均（fractal join）或是取最大值（Maxout），參考文章中提及目前還沒有明顯的優劣勢，當然各種分支的結合有其訓練上的意義，例如總和和平均在 drop-out/drop-path 上表現不同，最大值能保持不變性，這些可以把它當作一個架構設計上的問題。&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-6.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;
+</description>
+<pubDate>
+Tue, 15 Nov 2016 00:00:00 +0800
+</pubDate>
+<author>
+fatfingererr
+</author>
+</item>
 <item>
 <guid>
 fatfingererr.github.io/posts/2016-11-12-LISP語言的初探索-1.html
