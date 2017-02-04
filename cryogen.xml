@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss version='2.0' xmlns:atom='http://www.w3.org/2005/Atom'>
+<channel>
+<atom:link href='fatfingererr.github.io' rel='self' type='application/rss+xml'/>
+<title>
+fatfingererr Blog
+</title>
+<link>
+fatfingererr.github.io
+</link>
+<description>
+fatfingererr Blog
+</description>
+<lastBuildDate>
+Sun, 05 Feb 2017 03:38:37 +0800
+</lastBuildDate>
+<generator>
+clj-rss
+</generator>
+<item>
+<guid>
+fatfingererr.github.io/posts-output/2016-11-04-在 cryogen 中使用 MathJax 顯示數學公式/
+</guid>
+<link>
+fatfingererr.github.io/posts-output/2016-11-04-在 cryogen 中使用 MathJax 顯示數學公式/
+</link>
+<title>
+在 cryogen 中使用 MathJax 顯示數學公式
+</title>
+<description>
+&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt; 由於不久之前在使用 &lt;a href='https://github.com/coldnew/org-ioslide'&gt;org-ioslide&lt;/a&gt; 時，使用到了 MathJax 這個在網頁上以 LaTeX 方式顯示數學公式的套件，覺得很好用。於是今天就在思考說，有沒有辦法也在 cryogen 中使用呢？由於不太了解網頁設計，於是只好摸索了一下，最終終於搞定了。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt; 首先，你得要有 MathJax 的整個 js 套件。&lt;/p&gt;&lt;p&gt; 在這邊我們使用簡單版不佔空間的 623KB MathJax 套件：&lt;a href='https://github.com/tiborsimon/mathjax-minimal-package'&gt;tiborsimon/mathjax-minimal-package&lt;/a&gt;&lt;/p&gt;&lt;p&gt; 假如你已經在 &lt;a href='posts/2016-10-30-以cryogen搭建個人部落格.html'&gt;cryogen-blog&lt;/a&gt; 目錄裡：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;git clone https://github.com/tiborsimon/mathjax-minimal-package.git resources/templates/js
+&lt;/code&gt;&lt;/pre&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;調整&amp;#95;cryogen&amp;#95;中的網頁模板&quot;&gt;&lt;/a&gt;調整 cryogen 中的網頁模板&lt;/h3&gt;&lt;p&gt; 打開 &lt;code&gt;resources/templates/html/layouts&lt;/code&gt; 你會看到兩個檔案：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;base.html&lt;ul&gt;&lt;li&gt;base-with-navbar.html&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;  &lt;/p&gt;&lt;p&gt;這兩個檔案主要是作為 cryogen 網頁生成的基本模板，所以我們要在這兩個模板中加入 mathjax 的使用&lt;/p&gt;&lt;p&gt;  因此，打開 &lt;code&gt;resources/templates/html/layouts/base.html&lt;/code&gt; 在內容上方處尋找並新增 ：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;html&quot;&gt;...
+{% style &amp;quot;css/screen.css&amp;quot; %}
+{% style &amp;quot;css/bootswatch.css&amp;quot; %}
+&amp;lt;!-- 請插入下方這行於此 --&amp;gt;
+&amp;lt;script type=&amp;quot;text/javascript&amp;quot; async  src=&amp;quot;/js/mathjax/MathJax.js?config=TeX-AMS&amp;#95;CHTML&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+&amp;lt;!-- 請插入上方這行於此 --&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+&amp;lt;nav class=&amp;quot;navbar navbar-default navbar-fixed-top&amp;quot; role=&amp;quot;navigation&amp;quot;&amp;gt;
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;接著在內容最末處尋找並新增：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;html&quot;&gt;...
+&amp;lt;!-- 請插入下方這段於此 --&amp;gt;
+&amp;lt;script type=&amp;quot;text/x-mathjax-config&amp;quot;&amp;gt;
+    MathJax.Hub.Config&amp;#40;{
+        &amp;quot;CommonHTML&amp;quot;: {
+        scale: 100
+        }
+    }&amp;#41;;
+&amp;lt;/script&amp;gt;
+&amp;lt;!-- 請插入上方這段於此 --&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;這邊的 &lt;code&gt;scale: 100&lt;/code&gt; 你可以改成任何的大小，會影響你的 LaTeX 方程式在網頁上呈現的相對大小。&lt;/p&gt;&lt;p&gt;注意！在  &lt;code&gt;resources/templates/html/layouts/base-with-navbar.html&lt;/code&gt; 也是一樣要分別在檔案起始和末尾處做這樣的修改。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;在部落格文章中使用&quot;&gt;&lt;/a&gt;在部落格文章中使用&lt;/h3&gt;&lt;p&gt; 在 markdown 使用基本上沒什麼問題，你只需要用 &lt;code&gt;$$&lt;/code&gt; 符號前後包住 LaTeX 方程式就可以了：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;markdown&quot;&gt;$$\begin{align}
+\begin{bmatrix}
+\color{blue}1 &amp;amp; 0 &amp;amp; 0 \\\\
+0 &amp;amp; \color{blue}1 &amp;amp; 0 \\\\
+0 &amp;amp; 0 &amp;amp; \color{blue}1
+\end{bmatrix} \cdot \begin{bmatrix}
+\color{red}1 &amp;amp; 0 &amp;amp; 0 \\\\
+0 &amp;amp; \color{red}1 &amp;amp; 0 \\\\
+0 &amp;amp; 0 &amp;amp; \color{red}1
+\end{bmatrix} = \begin{bmatrix}
+\color{green}1 &amp;amp; 0 &amp;amp; 0 \\\\
+0 &amp;amp; \color{green}1 &amp;amp; 0 \\\\
+0 &amp;amp; 0 &amp;amp; \color{green}1
+\end{bmatrix}
+\end{align}$$
+&lt;/code&gt;&lt;/pre&gt;&lt;br/&gt;&lt;p&gt;這邊提到幾點【注意】：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;首先頭尾 LaTeX 方程式的 &lt;code&gt;$$&lt;/code&gt; 盡量後面就直接接方程式，不要換行，避免一些可能出問題的情況&lt;/li&gt;&lt;li&gt;如果要用到 LaTeX 中的方程式的換行 &amp;#92;&amp;#92; (尤其是表達矩陣) 建議用 &amp;#92;&amp;#92;&amp;#92;&amp;#92; 也就是用四個斜槓&lt;ul&gt;&lt;li&gt;因為在 markdown 轉 html 會吃掉 &amp;#92;&amp;#92; 變成 &lt;code&gt;&amp;amp;#92;&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; 依照上面那段 LaTeX 方程式，看起來就會像這樣：&lt;/p&gt;&lt;p&gt;$$\begin{align} \begin{bmatrix} \color{blue}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{blue}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{blue}1 \end{bmatrix} \cdot \begin{bmatrix} \color{red}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{red}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{red}1 \end{bmatrix} = \begin{bmatrix} \color{green}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{green}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{green}1 \end{bmatrix} \end{align}$$&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Fri, 04 Nov 2016 00:00:00 +0800
+</pubDate>
+</item>
+<item>
+<guid>
+fatfingererr.github.io/posts-output/2016-10-30-以cryogen搭建個人部落格/
+</guid>
+<link>
+fatfingererr.github.io/posts-output/2016-10-30-以cryogen搭建個人部落格/
+</link>
+<title>
+以 cryogen 搭建個人部落格
+</title>
+<description>
+&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;首先至 &lt;a href='http://cryogenweb.org/'&gt;cryogen&lt;/a&gt; 的 &lt;a href='https://github.com/cryogen-project/cryogen'&gt;GitHub repo&lt;/a&gt;，從 README 中的 &lt;a href='https://github.com/cryogen-project/cryogen/blob/master/README.md#some-sites-made-with-cryogen'&gt;Some Sites Made With Cryogen&lt;/a&gt; 中挑選一個喜歡的主題&lt;/p&gt;&lt;p&gt;你很快會發現許多人的樣式都很類似，那是 cryogen 的預設模板，而本部落格使用的是 &lt;a href='http://tangrammer.github.io/'&gt;on the clojure move&lt;/a&gt; 的模板&lt;/p&gt;&lt;p&gt;你可以至 &lt;a href='https://github.com/tangrammer/cryogen-blog'&gt;on the clojure move 的 Github repo&lt;/a&gt; 複製一份為自己所用，或是到 &lt;a href='https://github.com/fatfingererr/cryogen-blog'&gt;我的 Github repo&lt;/a&gt; 複製一份中文的&lt;/p&gt;&lt;p&gt;我也是以該模板簡單微調，都沒有關係&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;clone&amp;#95;完整的&amp;#95;cryogen&amp;#95;repo&amp;#95;到電腦中&quot;&gt;&lt;/a&gt;clone 完整的 cryogen repo 到電腦中&lt;/h3&gt;&lt;pre&gt;&lt;code&gt;git clone https://github.com/fatfingererr/cryogen-blog.git
+cd cryogen-blog
+lein ring server
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;接著打開 &lt;a href='http://localhost:3000/'&gt;http://localhost:3000/&lt;/a&gt; 就可以看到部落格樣板在自己電腦中運行的樣子&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/cryogen-repo-struct.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;cryogen-blog&amp;#95;專案資料夾架構&quot;&gt;&lt;/a&gt;cryogen-blog 專案資料夾架構&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;我們比較常用到的是 &lt;code&gt;resources&lt;/code&gt; 資料夾，主要是對 blog 的文章與頁面進行新增與修改&lt;/p&gt;&lt;p&gt;因為整個 blog 的 clojure 運作模式已大抵完成，關於 clojure 的部分我們比較少會去動到&lt;/p&gt;&lt;p&gt;在 &lt;code&gt;resources&lt;/code&gt; 資料夾底下分別有兩個資料夾：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;public&lt;/code&gt; - 靜態網頁放的地方，也是整個要作為 blog 內容上傳的資料夾&lt;/li&gt;&lt;li&gt;&lt;code&gt;templates&lt;/code&gt; - 所有的新增與修改都要在這個資料夾，透過 &lt;code&gt;lein ring server&lt;/code&gt; 將 blog 更新至 &lt;code&gt;public&lt;/code&gt; 後上傳&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;控制中心：config.edn&quot;&gt;&lt;/a&gt;控制中心：config.edn&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;&lt;code&gt;config.edn&lt;/code&gt; 檔案在 &lt;code&gt;resources/templates/&lt;/code&gt; 底下，內容為：&lt;/p&gt;&lt;pre&gt;&lt;code&gt;{:site-title       &amp;quot;Fat Finger ERR&amp;quot;
+ :author           &amp;quot;fatfingererr&amp;quot;
+ :description      &amp;quot;fatfingererr blog&amp;quot;
+ :site-url         &amp;quot;fatfingererr.github.io&amp;quot;
+ :post-root        &amp;quot;posts&amp;quot;
+ :tag-root         &amp;quot;tags&amp;quot;
+ :page-root        &amp;quot;pages&amp;quot;
+ :blog-prefix      &amp;quot;&amp;quot;
+ :rss-name         &amp;quot;feed.xml&amp;quot;
+ :recent-posts     5
+ :post-date-format &amp;quot;yyyy-MM-dd&amp;quot;
+ :sass-src         nil
+ :sass-dest        nil
+ :resources        &amp;#91;&amp;quot;css&amp;quot; &amp;quot;js&amp;quot; &amp;quot;images&amp;quot; &amp;quot;404.html&amp;quot; &amp;quot;README.md&amp;quot; &amp;quot;favicon.ico&amp;quot; &amp;quot;keybase.txt&amp;quot;&amp;#93;
+ :keep-files       &amp;#91;&amp;quot;.git&amp;quot;&amp;#93;
+ :disqus?          true
+ :disqus-shortname &amp;quot;fatfingererr&amp;quot; }
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; 基本上就和字面上的意思一樣，你可以根據你的需求修改，需要特別注意的是：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;:post-date-format&lt;/code&gt; 指的是你的每一篇部落格文章的標題要記得打的日期前餟的格式，打錯格式會無法轉 md 至 html&lt;ul&gt;&lt;li&gt;&lt;code&gt;:resources&lt;/code&gt; 包含的檔案才會從 &lt;code&gt;templates&lt;/code&gt; 轉到 &lt;code&gt;public&lt;/code&gt; 資料夾，像我有自己的圖示 &lt;code&gt;favicon.ico&lt;/code&gt; ，就要這樣子&lt;/li&gt;&lt;li&gt;我在 &lt;code&gt;:resources&lt;/code&gt; 中也包含了 &lt;code&gt;images&lt;/code&gt; 的原因，是因為部落格文章要用到的圖片我就用相對位址於文章中引用&lt;ul&gt;&lt;li&gt;例如：&lt;code&gt;&amp;lt;img src=&amp;quot;../images/cryogen-repo-struct.png&amp;quot; width=&amp;quot;100%&amp;quot;&amp;gt;&lt;/code&gt; 這樣&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;
+</description>
+<enclosure>
+
+</enclosure>
+<pubDate>
+Sun, 30 Oct 2016 00:00:00 +0800
+</pubDate>
+</item>
+</channel>
+</rss>

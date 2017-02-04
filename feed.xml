@@ -2,50 +2,47 @@
 <rss version='2.0' xmlns:atom='http://www.w3.org/2005/Atom'>
 <channel>
 <atom:link href='fatfingererr.github.io' rel='self' type='application/rss+xml'/>
-<generator>
-clj-rss
-</generator>
 <title>
-Fat Finger ERR
+fatfingererr Blog
 </title>
 <link>
 fatfingererr.github.io
 </link>
 <description>
-fatfingererr blog
+fatfingererr Blog
 </description>
 <lastBuildDate>
-Sat, 04 Feb 2017 23:47:41 +0800
+Sun, 05 Feb 2017 03:38:37 +0800
 </lastBuildDate>
-<author>
-fatfingererr
-</author>
+<generator>
+clj-rss
+</generator>
 <item>
 <guid>
-fatfingererr.github.io/posts/2016-11-15-類神經網路的設計模式.html
+fatfingererr.github.io/posts-output/2016-11-15-類神經網路的設計模式/
 </guid>
 <link>
-fatfingererr.github.io/posts/2016-11-15-類神經網路的設計模式.html
+fatfingererr.github.io/posts-output/2016-11-15-類神經網路的設計模式/
 </link>
 <title>
 類神經網路的設計模式
 </title>
 <description>
-&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt; 為什麼想寫類神經網路的設計模式呢？一方面是從 2015 年起，很多關於類神經網路的架構設計的學術文章陸續出現，因此去年 2015 我就零星在追蹤這些文章，另一方面，是最近看到一篇比較詳細綜述類型的文章，因此想把這個新東西帶給大家，本篇文章主要參考 2016-11 在 arXiv 的 &lt;a href='https://arxiv.org/abs/1611.00847v3'&gt;Deep Convolutional Neural Network Design Patterns&lt;/a&gt; 考古請見前方連結，中文翻譯可見 &lt;a href='http://it.sohu.com/20161105/n472379311.shtml'&gt;解析深度卷积神经网络的14种设计模式&lt;/a&gt; 然而翻譯並沒有考古文獻，請留心 &lt;/p&gt;&lt;/blockquote&gt;&lt;blockquote&gt;&lt;p&gt; 本文內容部分沒有嚴謹依據參考模型進行表示，為求簡單易懂還請見諒。 &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;類神經網路的設計模式&quot;&gt;&lt;/a&gt;類神經網路的設計模式&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 對於進行混合式類神經網路開發的人而言，我們其實在架構上十分的自由，我們想在任何一層、任何一個神經元去做任何事情，都不會有難度。但是難的是在是否對於我們各自想解決的問題，有個普遍共通性的架構設計可以參考？這是我從 2014 就在想的問題，我到現在還沒有想得很清楚，不過或許有幾個點值得注意。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 這些點普遍來自於深度學習的反思，因為深度學習比起傳統的類神經網路更需要細膩的架構設計，在深度學習變得超夯之後，不難想像早晚都要有人解決這個問題。只是沒想到在 ICLR 2017 就有還算完備又淺顯易懂的文章，作者將重點放在卷積類神經網路但是不影響我們思考問題，無論如何讓我們來看一下 14 個設計要點（打＊號為本部落格文章會提到）：&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;ol&gt;&lt;li&gt;架構結構遵循應用（Architectural Structure follows the Application）&lt;/li&gt;&lt;li&gt;&lt;strong&gt;擴增路徑（Proliferate Paths）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;保持簡約（Strive for Simplicity）&lt;/li&gt;&lt;li&gt;&lt;strong&gt;提升對稱性（Increase Symmetry）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;金字塔形狀（Pyramid Shape）&lt;/li&gt;&lt;li&gt;過擬合（Over-training）&lt;/li&gt;&lt;li&gt;覆蓋問題空間（Cover the Problem Space）&lt;/li&gt;&lt;li&gt;&lt;strong&gt;建構漸進式特徵（Incremental Feature Construction）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;&lt;strong&gt;各層輸入正規化（Normalize layer inputs）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;轉換輸入（Input Transition）&lt;/li&gt;&lt;li&gt;可用資源決定網路深度（Available resources guide Network Depth）&lt;/li&gt;&lt;li&gt;&lt;strong&gt;總和合併分支（Summation Joining）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;縮減取樣轉換（Down-sampling Transition）&lt;/li&gt;&lt;li&gt;以 Maxout 處理競爭（Maxout for Competition）保持不變性&lt;/li&gt;&lt;/ol&gt;&lt;br/&gt;在本部落格文章中只會特別介紹幾種個人認為比較廣泛、可以類比到多數類神經網路的設計模式，這不意味著我不採用本篇文章中提到的深度學習專門的設計模式，而是仍靜待更完整、完備的設計模式的討論，對於我個人而言，底下提到的幾種設計模式，能更快的被我應用於近期要解決的問題。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;hr/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;設計模式&amp;#95;02&amp;#95;-&amp;#95;擴增路徑&amp;#95;proliferate&amp;#95;paths&quot;&gt;&lt;/a&gt;設計模式 02 - 擴增路徑 Proliferate Paths&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;如果仔細觀察 &lt;a href='http://image-net.org/'&gt;ImageNet 挑戰賽&lt;/a&gt; 的 &lt;a href='https://www.microsoft.com/zh-cn/ard/news/newsinfo.aspx?newsid=news&amp;#95;2016&amp;#95;02'&gt;獲獎者&lt;/a&gt;，你會發現大家使用的類神經網路深度不斷加深，除此之外還有一個重要趨勢：每一個神經元往後接出去的路徑往往都是倍增的：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-1.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;hr/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;設計模式&amp;#95;04&amp;#95;-&amp;#95;提升對稱性&amp;#95;increase&amp;#95;symmetry&quot;&gt;&lt;/a&gt;設計模式 04 - 提升對稱性 Increase Symmetry&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;提升對稱性的設計模式，想法主要是來自於 FractalNet（碎形網路）的設計&lt;/p&gt;&lt;p&gt;FractalNet 具有很不錯的對稱性，讓我們來看張碎形：&lt;/p&gt;&lt;p&gt;&lt;center&gt;&lt;img src=&quot;../images/類神經網路的設計模式-2.jpg&quot; width=&quot;50%&quot;&gt; &lt;br/&gt;圖片來源：&lt;a href='https://commons.wikimedia.org/wiki/File:Mandel&amp;#95;zoom&amp;#95;00&amp;#95;mandelbrot&amp;#95;set.jpg'&gt;維基多媒體 Wikimedia (GNU自由文件授權)&lt;/a&gt;&lt;/center&gt; &lt;br/&gt;&lt;/p&gt;&lt;p&gt;那到底在類神經網路中，這種對稱性表現在哪裡呢？&lt;/p&gt;&lt;p&gt;讓我們來看一下碎形的網路架構：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-3.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;是不是有一種碎形的感覺呢？&lt;/p&gt;&lt;p&gt;這邊要特別注意到，碎形網路的對稱性是從左至右&lt;/p&gt;&lt;p&gt;而從上而下的對稱性是比較常見的，也是前面提到的設計模式 02 擴增路徑的方法&lt;/p&gt;&lt;p&gt;雖然碎形網路從上而下沒有對稱性，但仍然具備了擴增路徑的設計模式：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-4.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;hr/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;設計模式&amp;#95;08&amp;#95;-&amp;#95;建構漸進式特徵&amp;#95;incremental&amp;#95;feature&amp;#95;construction&quot;&gt;&lt;/a&gt;設計模式 08 - 建構漸進式特徵 Incremental Feature Construction&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;什麼叫做漸進式的特徵呢？在深度學習裡面我們每一層的輸出，基本上可以看做是不同層次的特徵。越深層次的網路輸出，通常也就是越高層次的抽象特徵，這些特徵的建構原則上不能太過跳躍（skip），才能使得特徵具有漸進式的建構路徑。	&lt;/p&gt;&lt;p&gt;讓我們來看一個跳躍式的特徵建構：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-5.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;關於跳躍的討論，其實牽涉到一篇我覺寫得非常讚的今年（2016）年中的論文 &lt;a href='https://arxiv.org/pdf/1610.01644v3.pdf'&gt;Understanding intermediate layers using linear classifier probes&lt;/a&gt; 這篇特別關注的是類神將網路中每一層的神經元到底為結果貢獻了什麼？找時間再分享吧（TODO - 文章方法結合啟發式演算法的實務應用）&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;hr/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;設計模式&amp;#95;12&amp;#95;-&amp;#95;總和合併分支&amp;#95;summation&amp;#95;joining&quot;&gt;&lt;/a&gt;設計模式 12 - 總和合併分支 Summation Joining&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;合併分支的方法設計也很重要，如果在深度學習中我們常用的是串聯（concatenation）、求和（Summation Join）、平均（fractal join）或是取最大值（Maxout），參考文章中提及目前還沒有明顯的優劣勢，當然各種分支的結合有其訓練上的意義，例如總和和平均在 drop-out/drop-path 上表現不同，最大值能保持不變性，這些可以把它當作一個架構設計上的問題。&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-6.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt; 為什麼想寫類神經網路的設計模式呢？一方面是從 2015 年起，很多關於類神經網路的架構設計的學術文章陸續出現，因此去年 2015 我就零星在追蹤這些文章，另一方面，是最近看到一篇比較詳細綜述類型的文章，因此想把這個新東西帶給大家，本篇文章主要參考 2016-11 在 arXiv 的 &lt;a href='https://arxiv.org/abs/1611.00847v3'&gt;Deep Convolutional Neural Network Design Patterns&lt;/a&gt; 考古請見前方連結，中文翻譯可見 &lt;a href='http://it.sohu.com/20161105/n472379311.shtml'&gt;解析深度卷积神经网络的14种设计模式&lt;/a&gt; 然而翻譯並沒有考古文獻，請留心 &lt;/p&gt;&lt;/blockquote&gt;&lt;blockquote&gt;&lt;p&gt; 本文內容部分沒有嚴謹依據參考模型進行表示，為求簡單易懂還請見諒。 &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;類神經網路的設計模式&quot;&gt;&lt;/a&gt;類神經網路的設計模式&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 對於進行混合式類神經網路開發的人而言，我們其實在架構上十分的自由，我們想在任何一層、任何一個神經元去做任何事情，都不會有難度。但是難的是在是否對於我們各自想解決的問題，有個普遍共通性的架構設計可以參考？這是我從 2014 就在想的問題，我到現在還沒有想得很清楚，不過或許有幾個點值得注意。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 這些點普遍來自於深度學習的反思，因為深度學習比起傳統的類神經網路更需要細膩的架構設計，在深度學習變得超夯之後，不難想像早晚都要有人解決這個問題。只是沒想到在 ICLR 2017 就有還算完備又淺顯易懂的文章，作者將重點放在卷積類神經網路但是不影響我們思考問題，無論如何讓我們來看一下 14 個設計要點（打＊號為本部落格文章會提到）：&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;ol&gt;&lt;li&gt;架構結構遵循應用（Architectural Structure follows the Application）&lt;/li&gt;&lt;li&gt;&lt;strong&gt;擴增路徑（Proliferate Paths）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;保持簡約（Strive for Simplicity）&lt;/li&gt;&lt;li&gt;&lt;strong&gt;提升對稱性（Increase Symmetry）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;金字塔形狀（Pyramid Shape）&lt;/li&gt;&lt;li&gt;過擬合（Over-training）&lt;/li&gt;&lt;li&gt;覆蓋問題空間（Cover the Problem Space）&lt;/li&gt;&lt;li&gt;&lt;strong&gt;建構漸進式特徵（Incremental Feature Construction）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;&lt;strong&gt;各層輸入正規化（Normalize layer inputs）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;轉換輸入（Input Transition）&lt;/li&gt;&lt;li&gt;可用資源決定網路深度（Available resources guide Network Depth）&lt;/li&gt;&lt;li&gt;&lt;strong&gt;總和合併分支（Summation Joining）&lt;/strong&gt;＊&lt;/li&gt;&lt;li&gt;縮減取樣轉換（Down-sampling Transition）&lt;/li&gt;&lt;li&gt;以 Maxout 處理競爭（Maxout for Competition）保持不變性&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;br/&gt; 在本部落格文章中只會特別介紹幾種個人認為比較廣泛、可以類比到多數類神經網路的設計模式，這不意味著我不採用本篇文章中提到的深度學習專門的設計模式，而是仍靜待更完整、完備的設計模式的討論，對於我個人而言，底下提到的幾種設計模式，能更快的被我應用於近期要解決的問題。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;hr/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;設計模式&amp;#95;02&amp;#95;-&amp;#95;擴增路徑&amp;#95;proliferate&amp;#95;paths&quot;&gt;&lt;/a&gt;設計模式 02 - 擴增路徑 Proliferate Paths&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;如果仔細觀察 &lt;a href='http://image-net.org/'&gt;ImageNet 挑戰賽&lt;/a&gt; 的 &lt;a href='https://www.microsoft.com/zh-cn/ard/news/newsinfo.aspx?newsid=news_2016_02'&gt;獲獎者&lt;/a&gt;，你會發現大家使用的類神經網路深度不斷加深，除此之外還有一個重要趨勢：每一個神經元往後接出去的路徑往往都是倍增的：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-1.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;hr/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;設計模式&amp;#95;04&amp;#95;-&amp;#95;提升對稱性&amp;#95;increase&amp;#95;symmetry&quot;&gt;&lt;/a&gt;設計模式 04 - 提升對稱性 Increase Symmetry&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;提升對稱性的設計模式，想法主要是來自於 FractalNet（碎形網路）的設計&lt;/p&gt;&lt;p&gt;FractalNet 具有很不錯的對稱性，讓我們來看張碎形：&lt;/p&gt;&lt;p&gt;&lt;center&gt;&lt;img src=&quot;../images/類神經網路的設計模式-2.jpg&quot; width=&quot;50%&quot;&gt; &lt;br/&gt;圖片來源：&lt;a href='https://commons.wikimedia.org/wiki/File:Mandel_zoom_00_mandelbrot_set.jpg'&gt;維基多媒體 Wikimedia (GNU自由文件授權)&lt;/a&gt;&lt;/center&gt; &lt;br/&gt;&lt;/p&gt;&lt;p&gt;那到底在類神經網路中，這種對稱性表現在哪裡呢？&lt;/p&gt;&lt;p&gt;讓我們來看一下碎形的網路架構：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-3.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;是不是有一種碎形的感覺呢？&lt;/p&gt;&lt;p&gt;這邊要特別注意到，碎形網路的對稱性是從左至右&lt;/p&gt;&lt;p&gt;而從上而下的對稱性是比較常見的，也是前面提到的設計模式 02 擴增路徑的方法&lt;/p&gt;&lt;p&gt;雖然碎形網路從上而下沒有對稱性，但仍然具備了擴增路徑的設計模式：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-4.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;hr/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;設計模式&amp;#95;08&amp;#95;-&amp;#95;建構漸進式特徵&amp;#95;incremental&amp;#95;feature&amp;#95;construction&quot;&gt;&lt;/a&gt;設計模式 08 - 建構漸進式特徵 Incremental Feature Construction&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;什麼叫做漸進式的特徵呢？在深度學習裡面我們每一層的輸出，基本上可以看做是不同層次的特徵。越深層次的網路輸出，通常也就是越高層次的抽象特徵，這些特徵的建構原則上不能太過跳躍（skip），才能使得特徵具有漸進式的建構路徑。	&lt;/p&gt;&lt;p&gt;讓我們來看一個跳躍式的特徵建構：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-5.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;關於跳躍的討論，其實牽涉到一篇我覺寫得非常讚的今年（2016）年中的論文 &lt;a href='https://arxiv.org/pdf/1610.01644v3.pdf'&gt;Understanding intermediate layers using linear classifier probes&lt;/a&gt; 這篇特別關注的是類神將網路中每一層的神經元到底為結果貢獻了什麼？找時間再分享吧（TODO - 文章方法結合啟發式演算法的實務應用）&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;hr/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;設計模式&amp;#95;12&amp;#95;-&amp;#95;總和合併分支&amp;#95;summation&amp;#95;joining&quot;&gt;&lt;/a&gt;設計模式 12 - 總和合併分支 Summation Joining&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;合併分支的方法設計也很重要，如果在深度學習中我們常用的是串聯（concatenation）、求和（Summation Join）、平均（fractal join）或是取最大值（Maxout），參考文章中提及目前還沒有明顯的優劣勢，當然各種分支的結合有其訓練上的意義，例如總和和平均在 drop-out/drop-path 上表現不同，最大值能保持不變性，這些可以把它當作一個架構設計上的問題。&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/類神經網路的設計模式-6.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;
 </description>
+<enclosure>
+
+</enclosure>
 <pubDate>
 Tue, 15 Nov 2016 00:00:00 +0800
 </pubDate>
-<author>
-fatfingererr
-</author>
 </item>
 <item>
 <guid>
-fatfingererr.github.io/posts/2016-11-12-LISP語言的初探索-1.html
+fatfingererr.github.io/posts-output/2016-11-12-LISP語言的初探索-1/
 </guid>
 <link>
-fatfingererr.github.io/posts/2016-11-12-LISP語言的初探索-1.html
+fatfingererr.github.io/posts-output/2016-11-12-LISP語言的初探索-1/
 </link>
 <title>
 LISP語言的個人初探索（一）
@@ -53,19 +50,19 @@ LISP語言的個人初探索（一）
 <description>
 &lt;p&gt;&lt;br/&gt; 難以回想第一次看到 lisp 語法的時候，自己所受到的衝擊有多麼之深，時間是2015 年初，當時我看到加法表示為：&lt;/p&gt;&lt;p&gt;$$ (+\ \ 1\ \ 1) $$ &lt;br/&gt;&lt;/p&gt;&lt;p&gt;事實上我看到這個的第一眼，我想到的是在許多代數課本裡面常見的運算表示：&lt;/p&gt;&lt;p&gt;$$ + : \mathbb{R} \times \mathbb{R} $$ &lt;br/&gt;&lt;/p&gt;&lt;p&gt;我心裡當下想：「哇！lisp 不就是我每天碰的代數理論，用程式碼表示出來的方式嗎？」&lt;/p&gt;&lt;p&gt;過沒幾分鐘，我就想：「對呀！這樣寫程式應該非常合理，我居然天天碰這樣的代數理論，卻從未想過程式可以這樣表達，太酷了。」&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;img src=&quot;../images/2016-11-12-LISP語言的初探索-1-1.png&quot; width=&quot;100%&quot;&gt; &lt;br/&gt;&lt;/p&gt;&lt;p&gt;然後接著就是開始做了初步了解，關於 lisp 的一些近期發展（事實上當初我受到衝擊，是無意間看到某篇文章提到的 &lt;a href='https://www.wikiwand.com/zh-tw/Clojure'&gt;Clojure&lt;/a&gt;）&lt;/p&gt;&lt;p&gt;後來就陸續了解到了 &lt;a href='https://www.wikiwand.com/zh-tw/Emacs'&gt;Emacs&lt;/a&gt;，並選擇 Clojure 當做一個起始點先來玩玩看，就這樣入坑了。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 所以比起許多人而言，是為了 clojure 可以使用 Java 的函式庫又可以進行函數式程式設計、或是為了處理並發問題（Concurrency）、又或是已經使用 LISP 相關語言一段時間，例如使用 Emacs 一段時間，小弟我著迷的點看起來真的十分奇怪，入坑姿勢也是十分迥異。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 這也給我帶來非常大的挫折，因為像是 Emacs 或 Clojure 這些使用到 LISP 的編輯器和語言，學習起來超容易撞牆，除了一方面這個領域的高手基本上已經十分客製化自己使用 lisp 的習慣，因此網路上各種教學文章和討論都不是那麼簡單，要找到合適的入門教材也很不容易。二方面是使用 lisp 似乎於業界使用上非常少見，所以像我這樣初入坑的也找不到什麼太多知名的 lisp 的軟體和活動。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 不過終究我還是因為這般不理性的執著，還是開始使用 Emacs 和 Clojure ，直到最近使用一段時間，開始反思之前沒搞清楚的問題。這就像是不計較女朋友的過往，但是交往一段時間之後還是想要知道，以前她的生活和回憶哈哈。&lt;/p&gt;
 </description>
+<enclosure>
+
+</enclosure>
 <pubDate>
 Sat, 12 Nov 2016 00:00:00 +0800
 </pubDate>
-<author>
-fatfingererr
-</author>
 </item>
 <item>
 <guid>
-fatfingererr.github.io/posts/2016-11-11-KKT條件於初始化權重之應用.html
+fatfingererr.github.io/posts-output/2016-11-11-KKT條件於初始化權重之應用/
 </guid>
 <link>
-fatfingererr.github.io/posts/2016-11-11-KKT條件於初始化權重之應用.html
+fatfingererr.github.io/posts-output/2016-11-11-KKT條件於初始化權重之應用/
 </link>
 <title>
 KKT條件於初始化權重之應用
@@ -73,39 +70,39 @@ KKT條件於初始化權重之應用
 <description>
 &lt;blockquote&gt;&lt;p&gt; 前面將會花費很大時間講解 KKT ，初學者到此就OK，再進階的可以看後方的初始化權重的應用 &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;&lt;center&gt; &lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/6Z3d7mtwcgs&quot; frameborder=&quot;0&quot; allowfullscreen&gt;&lt;/iframe&gt; &lt;/center&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; KKT條件不是什麼特別的數學，你可以簡單理解成拉格朗日乘數法的推廣，在連續數學（也就是微積分、梯度下降法那種數學）KKT條件在優化理論中扮演一個重要腳色，KKT條件特別在機器學習領域中應用於SVM上面，因為SVM要最小化的誤差的方法有很多種，但是對於類神經網路搭配啟發式演算法，我們的目標函數建構當然也可以借重這個優化方法，那我們會應用在哪裡呢？那就是在初始化權重的挑選。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 為什麼初始化權重很重要？因為如果我們能初始化權重在比較接近我們最終求得的解附近，最關鍵就是能減少我們訓練的時間，在做類神經網路的時候一定要有個概念，我們的資源十分珍貴，這個資源除了你的腦袋瓜子的知識，還有就是你應用知識出來得到結果所要耗費的時間，如果你想出一個絕佳的訓練方法，但是在一定計算能力下別人算三分鐘，你卻要算一週，這就會讓你的這個演算法的重要性下降，我常常以為你訓練類神經網路的時間，就是魔法師念咒語的時間，念咒語越久敵人就打過來啦，魔法還沒施出去你就被打死了。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;kkt條件&amp;#95;kkt&amp;#95;condition&quot;&gt;&lt;/a&gt;KKT條件 KKT Condition&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;考慮一個函數 F(x,y) 就像下右圖一樣的一個曲面，他在黃色區域有極大值，這邊可以注意到 X-Y 平面是我們的函數的定義域，值域是 Z 軸ｚ方向。&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/KKT條件於初始化權重之應用-1.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;br/&gt; 由於許多現實的考量，我們這個函數有一個限制條件，這就像是我們高中學的線性規劃一樣，我們有一個限制式，在這個限制式下我們會有兩個區域，一塊是藍色的可行解區域，紅色是被限制住，定義域不能是這些值，如下圖：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/KKT條件於初始化權重之應用-2.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;br/&gt; 在限制式底下我們能透過上帝視角看到最大值仍然存在於我們的限制條件內，下右圖在函數上以紅色星星可以看到最大值，如果我們把值域攤出來，可以看到左圖的紅色星星處也標記了最大值的定義域解，我們就是要想辦法找到他，而這個辦法我們會借助 KKT 條件。&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/KKT條件於初始化權重之應用-3.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;br/&gt; 現在我們開始在定義域移動我們的限制條件式，實際上就和高中學的一樣，我們&lt;strong&gt;【移動的限制條件式當作我們的目標函數】&lt;/strong&gt;，你可以在下方左圖看到軌跡（黑色到深黃色）也可以下右圖看到曲線移動過程中，對應到函數值曲線，這邊要特別注意到的是，我把梯度向量標了出來，你可以看到我們的限制曲線移動過程中，他的梯度向量的變化。&lt;/p&gt;&lt;p&gt;這邊要特別留意，當我移動限制式到最大值的時候，那個最大值點的梯度向量是 0 ，目前考慮的是連續函數的一個情況。 &lt;img src=&quot;../images/KKT條件於初始化權重之應用-4.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 當我移動限制曲線到最大值的時候，我們限制條件的梯度向量也會是 0 ，和頂點梯度向量一樣。 &lt;img src=&quot;../images/KKT條件於初始化權重之應用-5.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;這邊我們就可以得到 KKT 條件了，什麼意思呢？簡單來說就是如果我今天有一個限制條件，限制條件的梯度向量會和函數梯度向量平行的話，我們基本上就是找到了一個局部最大值∕最小值，而這就是所謂的 KKT 條件。&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/KKT條件於初始化權重之應用-6.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;初始化權重優化&quot;&gt;&lt;/a&gt;初始化權重優化&lt;/h3&gt;&lt;p&gt;考慮一個目標函數（或配適函數、Loss Function）如下：&lt;/p&gt;&lt;p&gt;$$ Min\ loss =\min_{w}\left &amp;#92;{\ \lambda \left \| \ weight \ \right \| ^2 + MSE\ \right &amp;#92;} $$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 這是一個我們常見的配適函數，我們除了希望能把 MSE 降到最小之外，我們也希望能讓權重的值不要太大，這中間有一個 lambda 的比例關係，讓我們不要過度的追求 MSE 最小或權重最小。這邊是一個比較簡單的描述，考慮的是輸出層的權重，透過簡單加權平均得到類神經網路的計算值，暫時不考慮 softmax 做簡單的示範，看得懂的話 softmax 也會做的。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 假如我們考慮初始化權重也不能離我們最終的權重太遠，我們可以這樣設定：&lt;/p&gt;&lt;p&gt;$$ \min_{w}\left &amp;#92;{\ \lambda \left \| \ weight \ \right \| ^2 + \mu \left \| \ weight - init\ weight \ \right \| ^2 + MSE\ \right &amp;#92;} $$&lt;/p&gt;&lt;p&gt;稍微用比較正式的縮寫寫法：&lt;/p&gt;&lt;p&gt;$$  \min&amp;#95;w \left &amp;#92;{\ \lambda \left \| \ w\ \right \| ^2 + \mu \left \| \ w - w_{0} \ \right \| ^2 + MSE \ \right &amp;#92;}  $$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 同樣道理，我們多了一個 w0 代表初始化權重，我們希望最終權重距離我們的初始化權重不要太遠，所以有一項 w - w0 ，而 mu 是來衡量初始化權重在訓練中佔的重要程度，這當然是相對於權重與MSE的一個參數。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 你可能會說不對呀！初始化權重不是一開始就確定了，這不就是一個固定常數？你這樣想沒錯，但這個前提是你只訓練一次、而且一次只訓練一組。一般常見初始化權重優化的應用場景，都是在熱啟動的環境，例如我的類神經網路是要會不斷有新的資料進來要一直重新訓練，由於資料可能越來越多（或是資料從起初的不均衡越來越均衡、或是訓練的標籤資料越來越多樣化）都可能增加訓練的時間，為了讓訓練時間能固定，才能好配合其他也要訓練的神經網路的時程，不要造成班表大亂，初始化權重優化的重要性才會這麼高。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;img src=&quot;../images/KKT條件於初始化權重之應用-7.png&quot; width=&quot;100%&quot;&gt; &lt;br/&gt; 對我來說一開始我可能會用隨機產生初始化權重，然後先跑十組類神經網路，搭配比較少的隱藏層的神經元，得到十個訓練完的網路，然後從這十個網路我可能會挑五個訓練過程比較好的，用他們五個的初始化權重再去訓練更多的神經元，或是訓練更大量的訓練資料（事實上，我有時候也會把神經元個數放到配適函數裡面求最小）。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 我們怎麼用 KKT 條件呢？最主要就是要把我們的配適函數中的 w 去掉，變成只有 w0 ，這樣子我們就能拿著只有 w0 的配適函數來作為初始化權重衡量的標準。&lt;/p&gt;&lt;p&gt;TODO：KKT 條件應用於初始化權重的證明（已打但還沒整理上來QQ）&lt;/p&gt;
 </description>
+<enclosure>
+
+</enclosure>
 <pubDate>
 Fri, 11 Nov 2016 00:00:00 +0800
 </pubDate>
-<author>
-fatfingererr
-</author>
 </item>
 <item>
 <guid>
-fatfingererr.github.io/posts/2016-11-09-關於暗知識_Dark_Knownledge.html
+fatfingererr.github.io/posts-output/2016-11-09-關於暗知識_Dark_Knownledge/
 </guid>
 <link>
-fatfingererr.github.io/posts/2016-11-09-關於暗知識_Dark_Knownledge.html
+fatfingererr.github.io/posts-output/2016-11-09-關於暗知識_Dark_Knownledge/
 </link>
 <title>
 關於暗知識 Dark Knownledge
 </title>
 <description>
-&lt;p&gt; &lt;br/&gt; &lt;center&gt; &lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/cpXhwJY1JkI&quot; frameborder=&quot;0&quot; allowfullscreen&gt;&lt;/iframe&gt;&lt;/center&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;br/&gt;&lt;/p&gt;&lt;p&gt;關於 Dark Knownledge（後面簡稱暗知識）從 2015 年起的新發展，一直很想找個機會打一篇文章，我認為所有在嘗試將啟發式演算法混合類神經網路、機器學習相關演算法的人，需要了解「暗知識」這個新名詞（儘管某種程度雖然還是舊觀念的包裝，不過至少要能跟上時代）。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;多數平凡人的資料並不大&quot;&gt;&lt;/a&gt;多數平凡人的資料並不大&lt;/h3&gt;&lt;p&gt;我覺得對於多數人而言，想解決問題之前，我們通常具有自己專業領域一定水準的知識，能協助我們找到一定量的相關資料，或是透過知識計算得到衍生的資料，這件事透露了兩點：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;由於我們具有知識，所以我們能去做許多假設&lt;/li&gt;&lt;li&gt;我們有一些的資料，不多維度也不會很高&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; 因此我想提出一個可能有些人不會同意的觀點，我基本上是比較傾向於建議，&lt;strong&gt;普通人如果想做出有意思的東西，應該做客製化的演算法&lt;/strong&gt;，例如你想創業、想要有獨到的眼光、亦或是你只想說有個初步的探查，但是你能槓桿的只有你自己的腦袋，不是公司或企業的內部的資料庫的較高權限的話，客製化演算法不錯。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 唯一的條件就是你得寫程式，當然你可能不用寫得很厲害，但是至少是要能手刻（hardcode）自己的演算法，不過你還是可以使用具有一定自由度的標準套件，擱置開發上的瑣碎問題。 　&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 關於客製化演算法的通常方法有兩種（以類神經網路為例）：&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h4&gt;&lt;a name=&quot;&lt;strong&gt;1.&amp;#95;並聯：多組搭配不同參數的相同演算法的組合模型（有個學術詞叫做「模型壓縮」個人不愛）&lt;/strong&gt;&quot;&gt;&lt;/a&gt;&lt;strong&gt;1. 並聯：多組搭配不同參數的相同演算法的組合模型（有個學術詞叫做「模型壓縮」個人不愛）&lt;/strong&gt;&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;搭配不同的初始權重（TODO：關於初始化權重的方法）&lt;/li&gt;&lt;li&gt;搭配不同的預處理或訓練資料，這可能根據於你的不同假設&lt;ul&gt;&lt;li&gt;參見本站文章最末關於資料的信任度〈&lt;a href='/posts/2016-11-07-萬事皆可弊&amp;#95;狄雷克雷分布於資料預處理的運用.html'&gt;萬事皆可弊：狄雷克雷分布於資料預處理的運用&lt;/a&gt;〉&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;br/&gt;&lt;h4&gt;&lt;a name=&quot;&lt;strong&gt;2.&amp;#95;串聯：演算法過程與結果，作為另一個獨立演算法輸入參考，一長串分次攻破的推理模型&lt;/strong&gt;&quot;&gt;&lt;/a&gt;&lt;strong&gt;2. 串聯：演算法過程與結果，作為另一個獨立演算法輸入參考，一長串分次攻破的推理模型&lt;/strong&gt;&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;常見的是先進行聚類的演算法，再針對資料裡的特殊、模糊值額外隔離出來訓練&lt;/li&gt;&lt;li&gt;通用模板：先進行ＯＯ演算法，再依據ＯＯ演算法的結果進行ＸＸ演算法&lt;/li&gt;&lt;/ul&gt;&lt;br/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;特殊算法常見問題：過擬合&amp;#95;over&amp;#95;fitting&quot;&gt;&lt;/a&gt;特殊算法常見問題：過擬合 Over Fitting&lt;/h3&gt;&lt;p&gt;TODO：關於過擬合想打一系列文章，過擬合的處理比較麻煩，要抓漏的步驟依賴你過擬合之前的輸入和訓練步驟&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;標籤值的預處理：硬目標與軟目標&amp;#95;hard&amp;#95;target&amp;#95;&amp;&amp;#95;soft&amp;#95;target&quot;&gt;&lt;/a&gt;標籤值的預處理：硬目標與軟目標 Hard Target &amp; Soft Target&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;倘若你讀過模糊理論，你對於硬目標 Hard Target 與軟目標 Soft Target 就不會有太大的陌生，什麼是 Hard Target 呢？就是例如像是不是 0 就是 1 的標籤值。 那 Soft Target 呢？就是被模糊過後的標籤值，例如 0.1 、 0.2 、 0.3 ，好現在問題來了，你為什麼能模糊你的標籤值呢？&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 你的訓練資料的標籤值，我們先假定處理二元的資料（0 或 1）例如你在處理地理資料，到底這邊是河？還是海？&lt;/p&gt;&lt;p&gt;那因為你具有地理的知識，你可以把你的標前值放到一些假設底下，使得是河還是海，它具有一個機率分布（可以依據你的輸入資料，或是標籤資料都可以，當然你甚至可以不要做任何假設，純粹模糊化你的標籤）也就是每個輸入資料的標籤值對應一個河海相似度，你可能可以先用理論模型計算，假設真的有一個能判斷是河海是海的模型，你就可以把標籤值用機率來表示：&lt;/p&gt;&lt;p&gt;$$ P(\ X = 河\ ) = 0.4\ \ ,\ \ \ P(\ X = 海\ ) = 0.6 $$ &lt;/p&gt;&lt;p&gt;&lt;br/&gt; 阿你可能會問說，我要用理論模型幹嘛還要用類神經網路？&lt;/p&gt;&lt;p&gt;問得很好，所以我們會理論模型的標籤值，和你純粹資料蒐集來的標籤值一起用，這就是「軟硬兼施」&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/關於暗知識DarkKnownledge-1.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;目標函數的構造：總合式配適函數&amp;#95;loss&amp;#95;function&amp;#95;sum&quot;&gt;&lt;/a&gt;目標函數的構造：總合式配適函數 Loss Function Sum&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;如果你有常在看類神經網路搭配啟發式演算法的文章，你就會對於 loss function 結合兩個模型的 error 不會太訝異，但是對於剛學習的新手而言，這是一個還蠻不錯值得思考的方向。&lt;/p&gt;&lt;p&gt;什麼方向呢？就是我們常常會思考訓練資料要挑維度，而忽略掉標籤資料也可以挑維度，你在最後一層輸出層其實可以去受到兩個標籤資料的共同監督。也就是說你的 Loss Function 可以長得像：&lt;/p&gt;&lt;p&gt;$$ loss\ function = (\ Hard\ Target\ Error\ ) + (\ Soft\ Target\ Error\ ) $$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 給進階者的問題是，你的 Norm Function 怎麼挑呢？我挑 L1, L2 會不會有影響呢？這就是進階問題了，線索是要去了解凸性。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 好，那為什麼我們可以把 Hard Target 和 Soft Target 一起放進來衡量呢？大家要記得，如果我 loss function 有放不只是模型輸出該匹配的值，還有例如你透過模型輸出得到的反饋值（例如你以模型預測庫存，然後用庫存得到銷售損益的反饋，你放入了 loss function ）&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 永遠要記得，配適函數中兩個部分的懲罰／獎勵因子，是要可能有一定程度的相關性（不一定是統計的相關，也可以是在訊息含量上可能的重疊）否則你達不到模型壓縮的功用。&lt;/p&gt;&lt;p&gt;否則我就直接 Hard Target 訓練一組模型、Soft Target 訓練一組模型就好啦！&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;暗知識：半監督式下訓練出來的模型&quot;&gt;&lt;/a&gt;暗知識：半監督式下訓練出來的模型&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;有時候對於手上資料少的人，我們用無監督其實很難把結果做很好的分類，但是透過給定的標籤值往往又會過擬合，透過這種將目標函數考量兩種以上的標籤值，而給予標籤值一個模糊空間或許是一個能拓展我們想像力的方法，而這樣子的處理方法，就是所謂的「暗知識」也就是我們把更多資料潛藏的可能特性，封裝到更少的參數中，讓這些參數能表達出更深層次的意涵。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;個人後記&quot;&gt;&lt;/a&gt;個人後記&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;其實暗知識的原文方法還是採取一個給定非常標準的方法，對於手上資料量大的人而言還是有用，但是手上資料量少的人更有用。 這篇文章的產生是來自於我在今天看到一篇文章，提到了BDK，也就是貝式暗知識，提醒我可以分享這篇文章，作為目標函數構造的初級入門參考。&lt;/p&gt;
+&lt;p&gt; &lt;br/&gt; &lt;center&gt; &lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/cpXhwJY1JkI&quot; frameborder=&quot;0&quot; allowfullscreen&gt;&lt;/iframe&gt;&lt;/center&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;br/&gt;&lt;/p&gt;&lt;p&gt;關於 Dark Knownledge（後面簡稱暗知識）從 2015 年起的新發展，一直很想找個機會打一篇文章，我認為所有在嘗試將啟發式演算法混合類神經網路、機器學習相關演算法的人，需要了解「暗知識」這個新名詞（儘管某種程度雖然還是舊觀念的包裝，不過至少要能跟上時代）。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;多數平凡人的資料並不大&quot;&gt;&lt;/a&gt;多數平凡人的資料並不大&lt;/h3&gt;&lt;p&gt;我覺得對於多數人而言，想解決問題之前，我們通常具有自己專業領域一定水準的知識，能協助我們找到一定量的相關資料，或是透過知識計算得到衍生的資料，這件事透露了兩點：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;由於我們具有知識，所以我們能去做許多假設&lt;/li&gt;&lt;li&gt;我們有一些的資料，不多維度也不會很高&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; 因此我想提出一個可能有些人不會同意的觀點，我基本上是比較傾向於建議，&lt;strong&gt;普通人如果想做出有意思的東西，應該做客製化的演算法&lt;/strong&gt;，例如你想創業、想要有獨到的眼光、亦或是你只想說有個初步的探查，但是你能槓桿的只有你自己的腦袋，不是公司或企業的內部的資料庫的較高權限的話，客製化演算法不錯。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 唯一的條件就是你得寫程式，當然你可能不用寫得很厲害，但是至少是要能手刻（hardcode）自己的演算法，不過你還是可以使用具有一定自由度的標準套件，擱置開發上的瑣碎問題。 　&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 關於客製化演算法的通常方法有兩種（以類神經網路為例）：&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h4&gt;&lt;a name=&quot;&lt;strong&gt;1.&amp;#95;並聯：多組搭配不同參數的相同演算法的組合模型（有個學術詞叫做「模型壓縮」個人不愛）&lt;/strong&gt;&quot;&gt;&lt;/a&gt;&lt;strong&gt;1. 並聯：多組搭配不同參數的相同演算法的組合模型（有個學術詞叫做「模型壓縮」個人不愛）&lt;/strong&gt;&lt;/h4&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;搭配不同的初始權重（TODO：關於初始化權重的方法）&lt;ul&gt;&lt;li&gt;搭配不同的預處理或訓練資料，這可能根據於你的不同假設&lt;ul&gt;&lt;li&gt;參見本站文章最末關於資料的信任度〈&lt;a href='/posts/2016-11-07-萬事皆可弊_狄雷克雷分布於資料預處理的運用.html'&gt;萬事皆可弊：狄雷克雷分布於資料預處理的運用&lt;/a&gt;〉&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;&lt;h4&gt;&lt;a name=&quot;&lt;strong&gt;2.&amp;#95;串聯：演算法過程與結果，作為另一個獨立演算法輸入參考，一長串分次攻破的推理模型&lt;/strong&gt;&quot;&gt;&lt;/a&gt;&lt;strong&gt;2. 串聯：演算法過程與結果，作為另一個獨立演算法輸入參考，一長串分次攻破的推理模型&lt;/strong&gt;&lt;/h4&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;常見的是先進行聚類的演算法，再針對資料裡的特殊、模糊值額外隔離出來訓練&lt;ul&gt;&lt;li&gt;通用模板：先進行ＯＯ演算法，再依據ＯＯ演算法的結果進行ＸＸ演算法&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;特殊算法常見問題：過擬合&amp;#95;over&amp;#95;fitting&quot;&gt;&lt;/a&gt;特殊算法常見問題：過擬合 Over Fitting&lt;/h3&gt;&lt;p&gt;TODO：關於過擬合想打一系列文章，過擬合的處理比較麻煩，要抓漏的步驟依賴你過擬合之前的輸入和訓練步驟&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;標籤值的預處理：硬目標與軟目標&amp;#95;hard&amp;#95;target&amp;#95;&amp;&amp;#95;soft&amp;#95;target&quot;&gt;&lt;/a&gt;標籤值的預處理：硬目標與軟目標 Hard Target &amp; Soft Target&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;倘若你讀過模糊理論，你對於硬目標 Hard Target 與軟目標 Soft Target 就不會有太大的陌生，什麼是 Hard Target 呢？就是例如像是不是 0 就是 1 的標籤值。 那 Soft Target 呢？就是被模糊過後的標籤值，例如 0.1 、 0.2 、 0.3 ，好現在問題來了，你為什麼能模糊你的標籤值呢？&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 你的訓練資料的標籤值，我們先假定處理二元的資料（0 或 1）例如你在處理地理資料，到底這邊是河？還是海？&lt;/p&gt;&lt;p&gt;那因為你具有地理的知識，你可以把你的標前值放到一些假設底下，使得是河還是海，它具有一個機率分布（可以依據你的輸入資料，或是標籤資料都可以，當然你甚至可以不要做任何假設，純粹模糊化你的標籤）也就是每個輸入資料的標籤值對應一個河海相似度，你可能可以先用理論模型計算，假設真的有一個能判斷是河海是海的模型，你就可以把標籤值用機率來表示：&lt;/p&gt;&lt;p&gt;$$ P(\ X = 河\ ) = 0.4\ \ ,\ \ \ P(\ X = 海\ ) = 0.6 $$ &lt;/p&gt;&lt;p&gt;&lt;br/&gt; 阿你可能會問說，我要用理論模型幹嘛還要用類神經網路？&lt;/p&gt;&lt;p&gt;問得很好，所以我們會理論模型的標籤值，和你純粹資料蒐集來的標籤值一起用，這就是「軟硬兼施」&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/關於暗知識DarkKnownledge-1.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;目標函數的構造：總合式配適函數&amp;#95;loss&amp;#95;function&amp;#95;sum&quot;&gt;&lt;/a&gt;目標函數的構造：總合式配適函數 Loss Function Sum&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;如果你有常在看類神經網路搭配啟發式演算法的文章，你就會對於 loss function 結合兩個模型的 error 不會太訝異，但是對於剛學習的新手而言，這是一個還蠻不錯值得思考的方向。&lt;/p&gt;&lt;p&gt;什麼方向呢？就是我們常常會思考訓練資料要挑維度，而忽略掉標籤資料也可以挑維度，你在最後一層輸出層其實可以去受到兩個標籤資料的共同監督。也就是說你的 Loss Function 可以長得像：&lt;/p&gt;&lt;p&gt;$$ loss\ function = (\ Hard\ Target\ Error\ ) + (\ Soft\ Target\ Error\ ) $$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 給進階者的問題是，你的 Norm Function 怎麼挑呢？我挑 L1, L2 會不會有影響呢？這就是進階問題了，線索是要去了解凸性。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 好，那為什麼我們可以把 Hard Target 和 Soft Target 一起放進來衡量呢？大家要記得，如果我 loss function 有放不只是模型輸出該匹配的值，還有例如你透過模型輸出得到的反饋值（例如你以模型預測庫存，然後用庫存得到銷售損益的反饋，你放入了 loss function ）&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 永遠要記得，配適函數中兩個部分的懲罰／獎勵因子，是要可能有一定程度的相關性（不一定是統計的相關，也可以是在訊息含量上可能的重疊）否則你達不到模型壓縮的功用。&lt;/p&gt;&lt;p&gt;否則我就直接 Hard Target 訓練一組模型、Soft Target 訓練一組模型就好啦！&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;暗知識：半監督式下訓練出來的模型&quot;&gt;&lt;/a&gt;暗知識：半監督式下訓練出來的模型&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;有時候對於手上資料少的人，我們用無監督其實很難把結果做很好的分類，但是透過給定的標籤值往往又會過擬合，透過這種將目標函數考量兩種以上的標籤值，而給予標籤值一個模糊空間或許是一個能拓展我們想像力的方法，而這樣子的處理方法，就是所謂的「暗知識」也就是我們把更多資料潛藏的可能特性，封裝到更少的參數中，讓這些參數能表達出更深層次的意涵。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;個人後記&quot;&gt;&lt;/a&gt;個人後記&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;其實暗知識的原文方法還是採取一個給定非常標準的方法，對於手上資料量大的人而言還是有用，但是手上資料量少的人更有用。 這篇文章的產生是來自於我在今天看到一篇文章，提到了BDK，也就是貝式暗知識，提醒我可以分享這篇文章，作為目標函數構造的初級入門參考。&lt;/p&gt;
 </description>
+<enclosure>
+
+</enclosure>
 <pubDate>
 Wed, 09 Nov 2016 00:00:00 +0800
 </pubDate>
-<author>
-fatfingererr
-</author>
 </item>
 <item>
 <guid>
-fatfingererr.github.io/posts/2016-11-07-萬事皆可弊_狄雷克雷分布於資料預處理的運用.html
+fatfingererr.github.io/posts-output/2016-11-07-萬事皆可弊_狄雷克雷分布於資料預處理的運用/
 </guid>
 <link>
-fatfingererr.github.io/posts/2016-11-07-萬事皆可弊_狄雷克雷分布於資料預處理的運用.html
+fatfingererr.github.io/posts-output/2016-11-07-萬事皆可弊_狄雷克雷分布於資料預處理的運用/
 </link>
 <title>
 萬事皆可弊：狄雷克雷分布於資料預處理的運用
@@ -113,19 +110,19 @@ fatfingererr.github.io/posts/2016-11-07-萬事皆可弊_狄雷克雷分布於資
 <description>
 &lt;p&gt; &lt;br/&gt; 其實一直都很想分享這個主題，但一直都忘記&lt;/p&gt;&lt;p&gt;最近和一個朋友在討論問題時忽然回憶起來，想說就花點時間整理一下自己使用的心得&lt;/p&gt;&lt;p&gt;狄雷克雷分布（Dirichlet distribution）較常被人知道的應用是主題模型的建構（LDA, Latent Dirichlet Allocation）&lt;/p&gt;&lt;p&gt;但是我使用他的方式比較不是像 LDA 那樣建構多層的貝氏網路，儘管我還是有使用貝氏知識庫（BKB）&lt;/p&gt;&lt;p&gt;事實上狄雷克雷分布在貝氏運算十分好用，因為他具有共軛分布的性質，能降低運算的成本&lt;/p&gt;&lt;p&gt;在使用狄雷克雷分布於演算法開發，我較傾向於把它拿來做資料的預處理，或是給基於某些假設的衍生變數一個可信度&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;衍生變數&amp;#95;derived&amp;#95;variables&quot;&gt;&lt;/a&gt;衍生變數 Derived Variables&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;衍生變數簡單來說，就是我們利用一到多筆資料來產生出來的新資料，例如：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;資料離散化：我有一筆某些人的收入資料，將收入依照我劃分的區間分為 1, 2, 3 級&lt;/li&gt;&lt;li&gt;資料差異值：我有一筆某些人的收入資料，將收入與去年他的收入加減得到一年的變化&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; 當然這些是比較簡單的衍生變數，我們也可以透過許多「理論模型」來得到衍生變數，例如：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;隱含波動率：透過選擇權價格資料，從選擇權定價模型回推算市場標的的波動率&lt;/li&gt;&lt;li&gt;傅立葉轉換：透過將一個波動資料，從時域轉換到頻域，來觀察資料波動頻率&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; 假如你和我一樣，經常透過理論模型來產生衍生變數，你會遇到一個問題，理論模型是否值得相信？&lt;/p&gt;&lt;p&gt;尤其是你如果還要把衍生變數的資料，和原本的資料放進類神經網路模型中，到底你這個理論模型的衍生變數能否派上用場？&lt;/p&gt;&lt;p&gt;這都是在做混合式類神經網路的開發時，需要不斷問自己的問題，因為你既然要混合其他方法&lt;/p&gt;&lt;p&gt;代表說很多模型可能都有優缺點，需要看能不能發揮綜合起來的效果，因此每個模型的適合度都是相對的&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt; 關於衍生變數的進階部份，&lt;strong&gt;基因規劃法&lt;/strong&gt;（GP, Genetic Programming）可以幫你產生千奇百怪的衍生變數 &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;狄雷克雷分布&amp;#95;dirichlet&amp;#95;distribution&quot;&gt;&lt;/a&gt;狄雷克雷分布 Dirichlet distribution&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;狄雷克雷分布是一個機率分布，他非常適合來衡量一個機率事件是否「足夠隨機」&lt;/p&gt;&lt;p&gt;舉例來說，丟一顆骰子我們習慣丟到任何一點的機率是 1/6 ，然而這是在骰子是公平、丟的動作足夠隨機&lt;/p&gt;&lt;p&gt;然而事實是可能骰子被動了手腳，有人想作弊，這個在流動性不佳的金融商品交易上特別容易發生，也就是價格不夠隨機&lt;/p&gt;&lt;p&gt;當然這些作弊你不一定要去抗議，俗稱危機就是轉機，你如果能察覺就要利用這個方法來扭轉頹勢&lt;/p&gt;&lt;p&gt;如果你有這樣的想法，那迪雷克雷分布會是一個不錯的工具，統計的知識可以再去補&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;骰子被作弊的遊戲&quot;&gt;&lt;/a&gt;骰子被作弊的遊戲&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;讓我們考慮一個情況，一個正常骰子丟到 1-6 點的機率應該是 { 1/6, 1/6, 1/6, 1/6, 1/6, 1/6 }：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/萬事皆可弊：狄雷克雷分布於資料預處理的運用-1.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;然而如果考慮存在一個作弊的機率，使得丟到各點的機率偏向得到 1-2 點，那可能有另外一組形式：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/萬事皆可弊：狄雷克雷分布於資料預處理的運用-2.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;所以當我們用機率來寫，就要使用條件機率：&lt;/p&gt;&lt;p&gt;$$ P(\ \color{red}{X=2點} \ \ | \ \color{red}{\alpha = 作弊} \ ) = \color{red}{\frac{3}{10}} $$ $$ P(\ X=6點 \ \ | \ \color{red}{\alpha = 作弊} \ ) = \frac{1}{10} $$ $$P(\ X=2點 \ \ | \ \alpha = 正常 \ ) = \frac{1}{6} $$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 因此，如果你考慮的是像前面那樣子的一個情況，就可以看做是服從狄雷克雷分布：&lt;/p&gt;&lt;p&gt;$$ \color{brown}Z \sim Dir(\alpha) $$&lt;/p&gt;&lt;p&gt;這邊的 Z 呢，就是你考慮的各種機率組合，例如前面我們考慮了作弊於 1-2 點與正常的情況：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/萬事皆可弊：狄雷克雷分布於資料預處理的運用-3.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;而 alpha 呢，就是丟骰子之前，你考量可能有的事件機率的組合，可能有作弊的組合，或是正常的組合：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/萬事皆可弊：狄雷克雷分布於資料預處理的運用-4.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;那目前的問題是，我們想知道到底正常的情況發生的機率有多少，我們想看到底遊戲是否是公正的：&lt;/p&gt;&lt;p&gt;$$ P \left ( \color{red}{\alpha = 作弊/正常 } \right | \color{brown}{Z\ =\ 遊戲進行後的觀察}\  ) = ? $$&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;貝氏統計&quot;&gt;&lt;/a&gt;貝氏統計&lt;/h3&gt;&lt;p&gt;在解決前面那個問題之前，我們得先來了解貝氏統計，或是條件機率的概念&lt;/p&gt;&lt;p&gt;我們學過兩事件交集之機率，可以寫成在事件發生前提下另一事件發生的機率，與前提事件發生的機率相乘：&lt;/p&gt;&lt;p&gt;$$ P(\ Z = z \ \bigcap \ A = \alpha\ ) =  P( \ A = \alpha \ |\  Z = z \ )P(\ Z = z\ ) = P(\ Z = z \ | \ A  = \alpha \ )P( \ A  = \alpha \ )$$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 我們要的是後半兩個式子，這邊仍然令 Z 是丟骰子的事件，而 Alpha 是作弊與沒作弊的前提事件：&lt;/p&gt;&lt;p&gt;$$ P( \ A = \alpha \ |\  Z = z \ )\color{blue}{P(\ Z = z\ )} = P(\ Z = z \ | \ A  = \alpha \ )P( \ A  = \alpha \ ) $$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 由於不考慮作弊與否的情況是站在上帝視角，丟骰子到任何一點的可能機率基本上是固定的，所以忽略掉藍色 P(Z=z) 可得：&lt;/p&gt;&lt;p&gt;$$ P( \ A = \alpha \ |\  Z = z \ ) \ \sim \ P(\ Z = z \ | \ A  = \alpha \ )P( \ A  = \alpha \ ) $$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 這邊的波浪符號，是一種成正比的意思，因為 P(Z=z) 是常數，可但是我們不知道是多少&lt;/p&gt;&lt;p&gt;有沒有發現，上面式子左邊部份很像是我們要求的呢？&lt;/p&gt;&lt;p&gt;$$ P \left ( \color{red}{\alpha = 作弊/正常 } \right | \color{brown}{Z\ =\ 遊戲進行後的觀察}\  ) \ \sim \ P(\ \color{brown}{Z =\ 遊戲進行後的觀察} \ | \ \color{red}{\alpha = 作弊/正常} \ )P( \ \color{red}{\alpha = 作弊/正常} \ ) $$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 如果你有學過一點統計，你可能會想 alpha 和 Z 的機率分布怎麼決定呢？&lt;/p&gt;&lt;p&gt;至少可以確定的是，alpha 由於有多種可能，每一種可能對應一種機率，所以應該就是 &lt;strong&gt;多項分布&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;倘若如此，Z 在 alpha 給定的前提又是狄雷克雷分布的話，那 alpha 在給定 Z 的前提也會是狄雷克雷分布&lt;/p&gt;&lt;p&gt;你可能搞不太清楚，不過沒關係，這主要是為了方便讓我們透過不斷重複實驗（例如吉布斯採樣）來修正 alpha 機率&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;在資料預處理上的運用&quot;&gt;&lt;/a&gt;在資料預處理上的運用&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;當我手上有一筆資料時，我會用一些理論模型來產生一些衍生變數：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/萬事皆可弊：狄雷克雷分布於資料預處理的運用-5.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;但是由於我不相信銷售週期真的如理論模型所計算，所以我會先給衍生變數一個機率：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/萬事皆可弊：狄雷克雷分布於資料預處理的運用-6.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;然後加上我的不信任的情況（也就是我認為理論模型可能出錯的門檻）：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/萬事皆可弊：狄雷克雷分布於資料預處理的運用-7.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 然後執行狄雷克雷分布的吉布斯採樣，最後會得到一組機率是我覺得最有可能的情況：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/萬事皆可弊：狄雷克雷分布於資料預處理的運用-8.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;接著把這組情況對應的衍生變數計算出來，得到三組資料丟入類神經網路模型進行原本打算做的預測：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/萬事皆可弊：狄雷克雷分布於資料預處理的運用-9.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;透過得到的預測值，做一個組合預測，這就是我拿狄雷克雷分布做預處理的方法&lt;/p&gt;&lt;p&gt;打到後面有點累了，虎頭蛇尾請見諒 XD&lt;/p&gt;
 </description>
+<enclosure>
+
+</enclosure>
 <pubDate>
 Mon, 07 Nov 2016 00:00:00 +0800
 </pubDate>
-<author>
-fatfingererr
-</author>
 </item>
 <item>
 <guid>
-fatfingererr.github.io/posts/2016-11-06-Windows執行boot遇到Exception_in_thread_main的辦法.html
+fatfingererr.github.io/posts-output/2016-11-06-Windows執行boot遇到Exception_in_thread_main的辦法/
 </guid>
 <link>
-fatfingererr.github.io/posts/2016-11-06-Windows執行boot遇到Exception_in_thread_main的辦法.html
+fatfingererr.github.io/posts-output/2016-11-06-Windows執行boot遇到Exception_in_thread_main的辦法/
 </link>
 <title>
 Windows 執行 boot 遇到 Exception in thread main 的辦法
@@ -143,19 +140,19 @@ boot dev
 ... 正式執行
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;br/&gt; 本篇參考&lt;a href='https://github.com/boot-clj/boot'&gt;boot-clj/boot&lt;/a&gt; 中 2016/5 回報的 Issue &lt;a href='https://github.com/boot-clj/boot/issues/467'&gt;brew version does not work #467&lt;/a&gt; 的解決方法&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 如果你有遇到這個問題，但不是這樣的解法，也歡迎分享哦！&lt;/p&gt;
 </description>
+<enclosure>
+
+</enclosure>
 <pubDate>
 Sun, 06 Nov 2016 00:00:00 +0800
 </pubDate>
-<author>
-fatfingererr
-</author>
 </item>
 <item>
 <guid>
-fatfingererr.github.io/posts/2016-11-05-認識對稱分析與膠解.html
+fatfingererr.github.io/posts-output/2016-11-05-認識對稱分析與膠解/
 </guid>
 <link>
-fatfingererr.github.io/posts/2016-11-05-認識對稱分析與膠解.html
+fatfingererr.github.io/posts-output/2016-11-05-認識對稱分析與膠解/
 </link>
 <title>
 認識對稱分析與膠解
@@ -163,19 +160,19 @@ fatfingererr.github.io/posts/2016-11-05-認識對稱分析與膠解.html
 <description>
 &lt;p&gt;&lt;br/&gt; 今天要介紹的是對稱分析，對稱分析是一種思考問題的方式，透過這個方式我們能將許多問題變成代數問題。大眾比較少這樣做，因為多數人不具有深入的代數知識，在此簡單介紹。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;群&amp;#95;group&quot;&gt;&lt;/a&gt;群 Group&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;群是一個數學的概念，簡單理解就是一個集合搭配一個運算，舉例來說，平面上的旋轉群就是一堆旋轉矩陣搭配矩陣乘法：&lt;/p&gt; &lt;p&gt;$$G = \left ( \begin{bmatrix} \cos \theta &amp; - \sin \theta &amp;#92;&amp;#92; \sin \theta &amp; \cos \theta  \end{bmatrix} ,\ \  * \right )$$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 群的元素有個特色，就是能彼此疊加，簡單理解就是旋轉矩陣乘以旋轉矩陣還是旋轉矩陣：&lt;/p&gt; &lt;p&gt;$$\begin{bmatrix} \cos \theta &amp; - \sin \theta &amp;#92;&amp;#92; \sin \theta &amp; \cos \theta  \end{bmatrix} \cdot \begin{bmatrix} \cos \phi &amp; - \sin \phi &amp;#92;&amp;#92; \sin \phi &amp; \cos \phi&lt;br /&gt; \end{bmatrix} = \begin{bmatrix} \cos (\theta + \phi) &amp; - \sin (\theta + \phi) &amp;#92;&amp;#92; \sin (\theta + \phi) &amp; \cos (\theta + \phi)  \end{bmatrix}$$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 所以兩個群元素（也就是兩個集合元素搭配一個運算方法）可以得到一個新的群元素。怎麼理解這個概念呢？  &lt;/p&gt;&lt;p&gt;假設我們在玩一個棋類遊戲，透過棋譜我們能用幾個步驟實現一個攻擊策略，那組合成更大的步驟就能實現一個更有遠見的攻擊策略。  &lt;/p&gt;&lt;p&gt;因此群就可以看成是「棋譜書」，而群元素就可以看成是「每個棋譜」而群搭配的運算就是「組合棋譜的步驟」&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;群作用&amp;#95;group&amp;#95;action&quot;&gt;&lt;/a&gt;群作用 Group Action&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;既然有了棋譜，真正派上用場的時間就是到棋盤對決。&lt;/p&gt;&lt;p&gt;因此群的元素，需要丟到一個空間中，讓群元素在該空間產生作用，這個作用我們稱做群作用（Group Action）。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 舉例來說，一個旋轉群的群元素是旋轉矩陣，我們把旋轉 90 度的矩陣丟到平面上對一組向量 (1,1) 產生群作用：&lt;/p&gt;&lt;p&gt;$$\begin{bmatrix} \cos 90 ^{\circ} &amp; - \sin 90 ^{\circ} &amp;#92;&amp;#92; \sin 90 ^{\circ} &amp; \cos 90 ^{\circ}  \end{bmatrix} = \begin{bmatrix} 0 &amp; -1 &amp;#92;&amp;#92; 1 &amp; 0  \end{bmatrix}\ \ ,\ \ \ \ \begin{bmatrix} 0 &amp; -1 &amp;#92;&amp;#92; 1 &amp; 0  \end{bmatrix} \cdot \begin{bmatrix} 1 &amp;#92;&amp;#92; 1 \end{bmatrix} = \begin{bmatrix} -1 &amp;#92;&amp;#92; 1 \end{bmatrix} $$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;img src=&quot;../images/認識對稱分析與膠解-1.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;因此透過群作用之後，你就會得到被作用之後的向量 (-1,1) 就像是把棋譜活用到棋盤對決。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;如果把這個概念類比到各種作用，例如物理上的力矩作用、化學上的燃燒作用、社會行為的交互作用，那又會是什麼樣的群呢？這些都是很好玩的問題。比較進階的概念是，如果你把群作用看成是類神經網路中每一層的轉換，就能解放你對於類神經網路的想像，你可以有各種不同的神經元權重運算方式，只要你能定義出一種群作用的運算方式。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;向量場&amp;#95;vector&amp;#95;field&quot;&gt;&lt;/a&gt;向量場 Vector Field&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;好，既然我們有了一本「棋譜集」，所以我們看到棋盤的時候就會開始無形想像棋子的移動和棋局的變化。這也是群作用一個很重要的想法，通常我們手上不會只有單一一個群元素，而是有一個完整的群，例如旋轉群有各種角度不同的旋轉矩陣。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 因此當我們在考量旋轉群在平面上的群作用，我們會想整個群在平面上的影響，這個平面應該無形中會有一個旋轉的作用力，就像是在一張紙底下放了一個旋轉的磁鐵，只要放一個鐵球上去就會被旋轉的磁鐵帶著動：&lt;/p&gt;&lt;p&gt;&lt;br/&gt; &lt;img src=&quot;../images/認識對稱分析與膠解-2.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;群不變量&amp;#95;group&amp;#95;invariant&quot;&gt;&lt;/a&gt;群不變量 Group Invariant&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;對於你手上現在拿著的這本「棋譜書」，誰會是實力相當的對手呢？很簡單，只要對手能不被你的棋譜策略給影響到，鑽你棋譜沒有注意到的漏洞，可能就會和你打成平手了。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 透過這個想法，我們可以開始思考，在群作用底下，有沒有什麼樣的對象是不會受到群作用影響？換句話說，有一個集合內的元素，經過群作用之後仍然在這個集合裡面。舉例來說，以前面提到的「旋轉群」為例，一個以原點為圓心、圓上一點為頂點組成的向量集合，就不會受到旋轉群的群作用影響：&lt;/p&gt; &lt;p&gt;&lt;br/&gt; &lt;img src=&quot;../images/認識對稱分析與膠解-3.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 此時我們會稱這個不受到群作用而有所改變的「圓」集合，叫做「群不變量」也就是所謂在代數領域中的 Invariant&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;無窮小轉換&amp;#95;infinitesimal&amp;#95;transformation&quot;&gt;&lt;/a&gt;無窮小轉換 Infinitesimal Transformation&lt;/h3&gt;&lt;/p&gt;&lt;p&gt;我們現在以旋轉群為例，我們仔細來思考旋轉這件事情，如果我們把旋轉的角度拉到非常非常小，也就是平面上一個向量正準備要開始旋轉了！那他的移動方向應該是往旋轉軌跡的切線方向前進：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/認識對稱分析與膠解-4.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;那麼無窮小轉換呢，其實就是要來表達群作用在非常微小短暫的瞬間，他對於作用空間的影響，通常習慣上我們是用微分的符號作為切線分量向量的表示，原因後面會詳述，這邊如果有學過微積分的，應該對於切線或是 dx, dy 不會太陌生，應該可以理解這個觀念。&lt;/p&gt; &lt;p&gt;&lt;br/&gt; 接著，我們回過頭來看前面提到的群不變量，我們已經知道圓上的所有點形成的集合是不會受到旋轉群作用的影響，換句話說，旋轉群的群作用無論多麼微小（或是多麼巨大）對於圓上點所成的集合都不會有影響，這些圓上的點依然都會是圓上的點，也就是整個旋轉群的「向量場」作用在以原點為圓心的圓上點集合{ C } ，都不會產生作用，我們用這種方式來表示：&lt;/p&gt;&lt;p&gt;$$ \left ( -y\frac{\partial }{\partial x} + x\frac{\partial }{\partial y} \right ) \cdot  \left &amp;#92;{ \ C \ \right &amp;#92;}  = 0  $$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 假如我們把圓上點的集合 { C } 用一個函數 F(x,y) 來表達，這個函數包含兩個維度 x, y 並整理一下式子：&lt;/p&gt;&lt;p&gt;$$ \left ( -y\frac{\partial }{\partial x} + x\frac{\partial }{\partial y} \right ) \cdot  F(x,y)  = 0  $$ &lt;/p&gt;&lt;p&gt;$$ -y\frac{\partial F}{\partial x} + x\frac{\partial F}{\partial y} = 0  $$ &lt;/p&gt;&lt;p&gt;&lt;br/&gt; 恭喜你啦！你會得到一個微分方程，如果你去解他，你會得到這個函數長成這樣子：&lt;/p&gt;&lt;p&gt;$$ F(x,y) = x ^2 + y ^2 + k  $$ &lt;/p&gt;&lt;p&gt;&lt;br/&gt; 有沒有覺得上面這個式子很熟悉呢，這正就是「圓」在平面上的方程式！而圓方程式在受到旋轉向量場作用之下，不會有任何變化，也就可以看做向量場在圓方程式上的作用造成的影響為零：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/認識對稱分析與膠解-5.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;從這邊就能了解到，假如我們手上有一個方程式要來解決，你就可以把這個方程式看成是一個群作用在你的解空間（定義域）而你要在解空間去找出群不變量，這個群不變量就能在群作用底下使得方程式為零，這就是把數學方程式的問題轉換成代數問題的方法。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;對稱分析&amp;#95;symmetry&amp;#95;analysis&quot;&gt;&lt;/a&gt;對稱分析 Symmetry Analysis&lt;/h3&gt;&lt;p&gt;那麼對稱分析呢，其實就是在研究各種不同的群作用和他在解空間的群不變量之間的關係，那為什麼叫「對稱」呢？因為群不變量在作用前後彷彿沒有變化，呈現一個「對作用前後表示對稱」的狀態，所以針對群不變量的研究分析，我們也就叫做對稱分析了。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 那由於對稱分析用的方法，並不是透過分析方法來去對方程式或問題求解，而是用群作用來找群不變量，所以你會發現在對稱分析領域中找出來的群不變量，並不像一般分析方法求出來那樣漂亮美麗一個公式就能表達，往往可能群不變量好多個局部集合，無法用一個單一函數來描述，這也使得透過對稱分析求得的解被戲稱為「膠解」，也就是一塊一塊地凝結在解空間中。&lt;/p&gt;
 </description>
+<enclosure>
+
+</enclosure>
 <pubDate>
 Sat, 05 Nov 2016 00:00:00 +0800
 </pubDate>
-<author>
-fatfingererr
-</author>
 </item>
 <item>
 <guid>
-fatfingererr.github.io/posts/2016-11-05-凱利公式與價格影響的關係與實務.html
+fatfingererr.github.io/posts-output/2016-11-05-凱利公式與價格影響的關係與實務/
 </guid>
 <link>
-fatfingererr.github.io/posts/2016-11-05-凱利公式與價格影響的關係與實務.html
+fatfingererr.github.io/posts-output/2016-11-05-凱利公式與價格影響的關係與實務/
 </link>
 <title>
 凱利公式與價格衝擊的槓桿關係與實務
@@ -183,26 +180,26 @@ fatfingererr.github.io/posts/2016-11-05-凱利公式與價格影響的關係與�
 <description>
 &lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt; 本文假定讀者了解「&lt;a href='https://www.wikiwand.com/zh-tw/%E5%87%B1%E5%88%A9%E5%85%AC%E5%BC%8F'&gt;凱利公式&lt;/a&gt;」和「&lt;a href='http://wiki.mbalib.com/zh-tw/%E5%B8%82%E5%9C%BA%E6%91%A9%E6%93%A6'&gt;市場摩擦&lt;/a&gt;」的原理 &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;a href='http://wiki.mbalib.com/zh-tw/%E5%95%86%E5%93%81%E4%BA%A4%E6%98%93%E9%A1%BE%E9%97%AE%E5%9F%BA%E9%87%91'&gt;Commodity Trading Advisor (CTA)&lt;/a&gt; 是一種基金形式，主要專注於期貨和選擇權市場，所以也被稱作是管理期貨基金。CTA 的交易策略的特點，主要可以分成兩類：趨勢交易與反趨勢交易，簡單理解就是找出市場趨勢持續期間跟著趨勢前進、或是找到市場趨勢反轉期間進行反趨勢的交易。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 有一種常用於 CTA 策略建構的資金管理技巧，就是「凱利公式」。要活用凱利公式，CTA 的策略基本上就要確定以下幾個特徵：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;策略執行的預期成功率&lt;/li&gt;&lt;li&gt;策略執行的預期失敗率&lt;/li&gt;&lt;li&gt;策略成功的預期獲利金額比例&lt;/li&gt;&lt;li&gt;策略失敗的預期損失金額比例&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; 為什麼這些特徵在 CTA 策略中比較容易計算，原因是透過期貨與選擇權組合出來的預期損益比較容易計算。例如一個選擇權的價差組合，只要市場價格介在某些特定區間，損益是固定的。在實務上 CTA 策略會遇到一些問題，就是如果手上持有的部位較大，想要根據凱利公式去調整部位，會因為交易標的的價格衝擊（Price Impact）進而產生衝擊成本（Impact Cost），更廣義來說，任何資金管理策略都會產生這個問題。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 在操作選擇權的投資組合時，你比較難透過如交易成本分析（Transaction Cost Analysis, TCA）來執行一個讓間接交易成本降到最低的策略，例如VWAP的策略，因為 CTA 實務可能不會真的去持有一個選擇權，而是透過調整持有商品標的和現金的比例來實現選擇權的損益情形，因此為了實現選擇權損益而不斷調整持有商品標的的比例，就無法施行諸如 VWAP 這種有一個固定目標持有量的策略。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 所以既然是一個不斷調整商品標的持有比例的投資組合，就該考慮價格衝擊，業界較常使用：&lt;/p&gt;&lt;p&gt;$$\Delta N \rightarrow \left ( \Delta S \right ) ^{\gamma} $$ &lt;br/&gt;&lt;/p&gt;&lt;p&gt;也就是我們會認為，調整持有商品標的的量 N 會受到商品價格 S 的衝擊且呈現一個次方關係，這個次方 gamma 值會根據不同的金融商品和市場流動性等因素而有所不同，學術研究較長使用 0.5 ，真實情況要根據不同時間和商品標的來估計，這個值可能是負值，例如在外匯市場幾乎不太可能因為較大部位調整，受到匯率波動的極大衝擊，實務在處理這個 gamma 值也可以先調整好量級、單位，再做估算（例如機構投資人以一千張股票作為單位，衡量受到價格、對數價格或報酬率的衝擊，再來估算 gamma）。&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 然而根據「凱利公式」會發現最佳商品標的持有比例 N 的調整，要依據商品標的價格 S 的變化來決定（其中 L 為槓桿乘數），因為商品價格的變化會直接導致損益，進而影響下一局的投入資金多寡，而這也依賴於 CTA 交易的槓桿倍數：&lt;/p&gt;&lt;p&gt;$$ L \cdot  \Delta S \rightarrow \Delta N $$&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 有了前面兩條公式，我們就可以畫出以下圖形：&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/凱利公式與價格衝擊的槓桿關係與實務-1.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 若是受到的價格衝擊與調整的部位沒有超出兩線交點，最終部位調整將會收斂到零，達成一個兼顧凱利公式與價格衝擊的 CTA 策略調整，屬於一個正常情況。&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/凱利公式與價格衝擊的槓桿關係與實務-2.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;反之，若是受到的價格衝擊與調整的部位超出兩線交點，最終部位調整將會無限放大，凱利公式的部位調整會造成投資組合得承受更大的價格衝擊。&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;../images/凱利公式與價格衝擊的槓桿關係與實務-3.png&quot; width=&quot;100%&quot;&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt; 因此在假定價格衝擊是一個普遍市場對於每一個 CTA 策略固定存在的影響，要避免承受到無法調整部位的價格衝擊，只能事先先考慮清楚凱利公式的槓桿倍數。 也可以從價格衝擊反推能承受的槓桿倍數，可以設定一個槓桿倍數的極限、或是倍數衰減，雖然無法完全按照凱利公式，但結果仍然會不錯且避免受到過大的價格衝擊。&lt;/p&gt;
 </description>
+<enclosure>
+
+</enclosure>
 <pubDate>
 Sat, 05 Nov 2016 00:00:00 +0800
 </pubDate>
-<author>
-fatfingererr
-</author>
 </item>
 <item>
 <guid>
-fatfingererr.github.io/posts/2016-11-04-在 cryogen 中使用 MathJax 顯示數學公式.html
+fatfingererr.github.io/posts-output/2016-11-04-在 cryogen 中使用 MathJax 顯示數學公式/
 </guid>
 <link>
-fatfingererr.github.io/posts/2016-11-04-在 cryogen 中使用 MathJax 顯示數學公式.html
+fatfingererr.github.io/posts-output/2016-11-04-在 cryogen 中使用 MathJax 顯示數學公式/
 </link>
 <title>
 在 cryogen 中使用 MathJax 顯示數學公式
 </title>
 <description>
 &lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt; 由於不久之前在使用 &lt;a href='https://github.com/coldnew/org-ioslide'&gt;org-ioslide&lt;/a&gt; 時，使用到了 MathJax 這個在網頁上以 LaTeX 方式顯示數學公式的套件，覺得很好用。於是今天就在思考說，有沒有辦法也在 cryogen 中使用呢？由於不太了解網頁設計，於是只好摸索了一下，最終終於搞定了。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt; 首先，你得要有 MathJax 的整個 js 套件。&lt;/p&gt;&lt;p&gt; 在這邊我們使用簡單版不佔空間的 623KB MathJax 套件：&lt;a href='https://github.com/tiborsimon/mathjax-minimal-package'&gt;tiborsimon/mathjax-minimal-package&lt;/a&gt;&lt;/p&gt;&lt;p&gt; 假如你已經在 &lt;a href='posts/2016-10-30-以cryogen搭建個人部落格.html'&gt;cryogen-blog&lt;/a&gt; 目錄裡：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;git clone https://github.com/tiborsimon/mathjax-minimal-package.git resources/templates/js
-&lt;/code&gt;&lt;/pre&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;調整&amp;#95;cryogen&amp;#95;中的網頁模板&quot;&gt;&lt;/a&gt;調整 cryogen 中的網頁模板&lt;/h3&gt;&lt;p&gt; 打開 &lt;code&gt;resources/templates/html/layouts&lt;/code&gt; 你會看到兩個檔案：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;base.html&lt;/li&gt;&lt;li&gt;base-with-navbar.html&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;  &lt;/p&gt;&lt;p&gt;這兩個檔案主要是作為 cryogen 網頁生成的基本模板，所以我們要在這兩個模板中加入 mathjax 的使用&lt;/p&gt;&lt;p&gt;  因此，打開 &lt;code&gt;resources/templates/html/layouts/base.html&lt;/code&gt; 在內容上方處尋找並新增 ：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;html&quot;&gt;...
+&lt;/code&gt;&lt;/pre&gt; &lt;br/&gt;&lt;h3&gt;&lt;a name=&quot;調整&amp;#95;cryogen&amp;#95;中的網頁模板&quot;&gt;&lt;/a&gt;調整 cryogen 中的網頁模板&lt;/h3&gt;&lt;p&gt; 打開 &lt;code&gt;resources/templates/html/layouts&lt;/code&gt; 你會看到兩個檔案：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;base.html&lt;ul&gt;&lt;li&gt;base-with-navbar.html&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;  &lt;/p&gt;&lt;p&gt;這兩個檔案主要是作為 cryogen 網頁生成的基本模板，所以我們要在這兩個模板中加入 mathjax 的使用&lt;/p&gt;&lt;p&gt;  因此，打開 &lt;code&gt;resources/templates/html/layouts/base.html&lt;/code&gt; 在內容上方處尋找並新增 ：&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;html&quot;&gt;...
 {% style &amp;quot;css/screen.css&amp;quot; %}
 {% style &amp;quot;css/bootswatch.css&amp;quot; %}
 &amp;lt;!-- 請插入下方這行於此 --&amp;gt;
@@ -241,39 +238,39 @@ fatfingererr.github.io/posts/2016-11-04-在 cryogen 中使用 MathJax 顯示數�
 \end{align}$$
 &lt;/code&gt;&lt;/pre&gt;&lt;br/&gt;&lt;p&gt;這邊提到幾點【注意】：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;首先頭尾 LaTeX 方程式的 &lt;code&gt;$$&lt;/code&gt; 盡量後面就直接接方程式，不要換行，避免一些可能出問題的情況&lt;/li&gt;&lt;li&gt;如果要用到 LaTeX 中的方程式的換行 &amp;#92;&amp;#92; (尤其是表達矩陣) 建議用 &amp;#92;&amp;#92;&amp;#92;&amp;#92; 也就是用四個斜槓&lt;ul&gt;&lt;li&gt;因為在 markdown 轉 html 會吃掉 &amp;#92;&amp;#92; 變成 &lt;code&gt;&amp;amp;#92;&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; 依照上面那段 LaTeX 方程式，看起來就會像這樣：&lt;/p&gt;&lt;p&gt;$$\begin{align} \begin{bmatrix} \color{blue}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{blue}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{blue}1 \end{bmatrix} \cdot \begin{bmatrix} \color{red}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{red}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{red}1 \end{bmatrix} = \begin{bmatrix} \color{green}1 &amp; 0 &amp; 0 &amp;#92;&amp;#92; 0 &amp; \color{green}1 &amp; 0 &amp;#92;&amp;#92; 0 &amp; 0 &amp; \color{green}1 \end{bmatrix} \end{align}$$&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;
 </description>
+<enclosure>
+
+</enclosure>
 <pubDate>
 Fri, 04 Nov 2016 00:00:00 +0800
 </pubDate>
-<author>
-fatfingererr
-</author>
 </item>
 <item>
 <guid>
-fatfingererr.github.io/posts/2016-11-01-初探輕量級工具.html
+fatfingererr.github.io/posts-output/2016-11-01-初探輕量級工具/
 </guid>
 <link>
-fatfingererr.github.io/posts/2016-11-01-初探輕量級工具.html
+fatfingererr.github.io/posts-output/2016-11-01-初探輕量級工具/
 </link>
 <title>
 關於輕量級工具
 </title>
 <description>
-&lt;p&gt; &lt;br/&gt;&lt;/p&gt;&lt;p&gt; 由於本身工作的關係，大部份演算法都是由自己刻（Hard Coding）然後拼裝而得，這會導致欠下大量的技術債，我很清楚這個問題，這也是為什麼在資產管理行業中若有比較明顯的分工，研究工作和開發工作往往是分開的。研究人員負責數理模型的搭建，若模型能在研究人員的測試環境中得到初步的好成果，再來計算該模型能帶來的效益。   &lt;/p&gt;&lt;br /&gt;&lt;p&gt; 如果能帶來好的效益，例如在風險計算或是資產價格計算上有更佳的判斷能力，才會將程式碼與模型架構轉交給開發人員，由開發人員進行更有效率的開發，例如使得程式碼能進行平行運算、輸入輸出都從手動更改為自動化連結資料庫進行處理並加密，最後編寫對應的測試。   &lt;/p&gt;&lt;br /&gt;&lt;p&gt; 講起來簡單，做起來難，關鍵是在於你如何切割整個系統開發流程給兩個部門，基本上研究部門也還是會使用到基本的平行運算和混和開發，而開發人員也是會協助研究人員改善數理模型的設計，沒有這麼絕對。無論如何，至少對於研究人員來說，大部分會使用到的工具應該還是較偏向於輕量級的工具。   &lt;/p&gt;&lt;br /&gt;&lt;p&gt; 以前沒有這樣思考過，後來認識一些工程師才漸漸明白有個詞叫做「輕量級工具」，這也使得我開始思考自己工作上使用到的東西，是否算是輕量級工具呢？甚而關於輕量級怎麼定義呢？於是就著手開始了解，底下也就是我對於這個詞的一些認識，或許理解上仍有不足，歡迎提供你的意見。&lt;/p&gt;&lt;p&gt;&lt;hr/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;工具的量級&quot;&gt;&lt;/a&gt;工具的量級&lt;/h3&gt;&lt;p&gt;目前我了解到的，工具的量級似乎可以簡單分成兩者：&lt;/p&gt;&lt;ol&gt;&lt;li&gt;重量級工具 - 追求高擴展性，能迅速擴大工具使用與影響的層面，又能兼顧安全與效能。&lt;/li&gt;&lt;li&gt;輕量級工具 - 追求快速開發解決問題，能在時間與資源的各種限制下完成開發需求。&lt;/li&gt;&lt;/ol&gt;&lt;br /&gt;&lt;p&gt;區分兩個工具的關鍵，在於工具的粒度，那麼粒度的粗細怎麼衡量：&lt;/p&gt;&lt;ol&gt;&lt;li&gt;工具的對象 - 細粒度的工具以單一對象為主&lt;/li&gt;&lt;li&gt;工具的解耦模式 - 細粒度的工具以相依性注入（Dependency Injection, DI）方式解耦&lt;/li&gt;&lt;li&gt;工具對運行環境的需求 - 細粒度的工具使得工具和使用工具的環境沒有太大的關聯，易於插拔（Running Anywhere）&lt;/li&gt;&lt;li&gt;運行環境對工具的控制 - 細粒度的工具提供反向控制（Inversion of Control, IoC）讓運行環境可以管理工具&lt;/li&gt;&lt;li&gt;工具啟動所需的資源 - 細粒度的工具不需要加載過多的依賴來啟動。&lt;/li&gt;&lt;li&gt;工具的侵入性 - 細粒度的工具不會過度要求開發者套用特定框架的類（Class），以免難以測試。&lt;/li&gt;&lt;li&gt;工具運行的生命週期 - 細粒度的工具運行時，生命週期會十分清楚，使得容易組合工具到更大的系統。&lt;/li&gt;&lt;/ol&gt;&lt;br /&gt;&lt;p&gt;重量級工具原則上應該是也要具備輕量級工具的優勢，然而往往：&lt;/p&gt;&lt;ol&gt;&lt;li&gt;佈署流程複雜，系統運行緩慢&lt;/li&gt;&lt;li&gt;系統內在彼此太多互相依賴，啟動時間長&lt;/li&gt;&lt;li&gt;系統需要設定好許多規則才能運行，自由空間小&lt;/li&gt;&lt;li&gt;難以除錯（Bebug）&lt;/li&gt;&lt;/ol&gt;&lt;br /&gt;&lt;p&gt;因此也有一說是，輕量級工具並非是對重量級工具的否定，而是一個互補的關係。此外，輕量級工具多數也是開放原始碼的專案，利於跨專案整合並快速開發，儘管如此，輕量級工具仍然有些缺點，例如太過考慮短期的需求，導致長期下來最終要大量的修正、重構與優化。&lt;/p&gt;&lt;br /&gt;&lt;p&gt;對於這一點，至少在自己工作上目前就是盡可能地把技術債，在研究部門和開發部門兩者之間去做平衡，不要讓開發部門拿到設計圖想死、也不讓研究部門處處受開發限制想撞牆。&lt;/p&gt;&lt;p&gt;&lt;hr/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;自己的功課&quot;&gt;&lt;/a&gt;自己的功課&lt;/h3&gt;&lt;h4&gt;&lt;a name=&quot;dependency&amp;#95;injection&quot;&gt;&lt;/a&gt;Dependency Injection&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;閱讀 &lt;a href='http://huan-lin.blogspot.com/2011/10/dependency-injection-1.html'&gt;Dependency Injection 筆記&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://jaceju.net/2014-07-27-php-di-container/'&gt;理解 Dependency Injection 實作原理&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://computer.jges.mlc.edu.tw/index.php/zend-framework-2/76-di-dependency-injection'&gt;DI(Dependency Injection)&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://ithelp.ithome.com.tw/articles/10141708'&gt;相依性注入(Dependency Injection)的一點點心得&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://blog.rangilin.idv.tw/dependency-injection/'&gt;Dependency Injection&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://openhome.cc/Gossip/SpringGossip/DI.html'&gt;Dependency Injection&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://blog.xuite.net/snowtech/blog/204127986-Dependency+Injection'&gt;Dependency Injection&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://garyliutw.blogspot.tw/2013/06/ioc-dependency-injection&amp;#95;27.html'&gt;轉載 IoC 容器和 Dependency Injection 模式&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://mmpud.logdown.com/posts/210242-dependency-injection'&gt;General Dependency Injection&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://abgne.tw/angularjs/angularjs-getting-stared/inject.html'&gt;AngularJS 入門教學 - $inject&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;h4&gt;&lt;a name=&quot;inversion&amp;#95;of&amp;#95;control&quot;&gt;&lt;/a&gt;Inversion of Control&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;閱讀 &lt;a href='https://www.wikiwand.com/zh-tw/%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC'&gt;控制反轉&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='https://dotblogs.com.tw/joysdw12/archive/2012/11/26/85081.aspx'&gt;.NET 實作工廠模式、 IoC (Inversion of Control) 與 DI (Depedency Injection)&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://blog.developer.idv.tw/2014/05/ioc-di.html'&gt;IOC 控制反轉 &amp; DI 依賴注入&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://openhome.cc/Gossip/SpringGossip/IOC.html'&gt;Inversion of Control&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://sunskynote.blogspot.tw/2016/01/inversion-of-control.html'&gt;Inversion of Control 控制反轉&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://ithelp.ithome.com.tw/articles/10156571'&gt;IoC基本概念介紹&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://www.petekcchen.com/2011/04/inversion-of-control-pattern.html'&gt;可抽換元件設計模式 - IoC Pattern&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; &lt;br/&gt;&lt;/p&gt;
+&lt;p&gt; &lt;br/&gt;&lt;/p&gt;&lt;p&gt; 由於本身工作的關係，大部份演算法都是由自己刻（Hard Coding）然後拼裝而得，這會導致欠下大量的技術債，我很清楚這個問題，這也是為什麼在資產管理行業中若有比較明顯的分工，研究工作和開發工作往往是分開的。研究人員負責數理模型的搭建，若模型能在研究人員的測試環境中得到初步的好成果，再來計算該模型能帶來的效益。   &lt;/p&gt;&lt;br /&gt;&lt;p&gt; 如果能帶來好的效益，例如在風險計算或是資產價格計算上有更佳的判斷能力，才會將程式碼與模型架構轉交給開發人員，由開發人員進行更有效率的開發，例如使得程式碼能進行平行運算、輸入輸出都從手動更改為自動化連結資料庫進行處理並加密，最後編寫對應的測試。   &lt;/p&gt;&lt;br /&gt;&lt;p&gt; 講起來簡單，做起來難，關鍵是在於你如何切割整個系統開發流程給兩個部門，基本上研究部門也還是會使用到基本的平行運算和混和開發，而開發人員也是會協助研究人員改善數理模型的設計，沒有這麼絕對。無論如何，至少對於研究人員來說，大部分會使用到的工具應該還是較偏向於輕量級的工具。   &lt;/p&gt;&lt;br /&gt;&lt;p&gt; 以前沒有這樣思考過，後來認識一些工程師才漸漸明白有個詞叫做「輕量級工具」，這也使得我開始思考自己工作上使用到的東西，是否算是輕量級工具呢？甚而關於輕量級怎麼定義呢？於是就著手開始了解，底下也就是我對於這個詞的一些認識，或許理解上仍有不足，歡迎提供你的意見。&lt;/p&gt;&lt;p&gt;&lt;hr/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;工具的量級&quot;&gt;&lt;/a&gt;工具的量級&lt;/h3&gt;&lt;p&gt;目前我了解到的，工具的量級似乎可以簡單分成兩者：&lt;/p&gt;&lt;ol&gt;&lt;li&gt;重量級工具 - 追求高擴展性，能迅速擴大工具使用與影響的層面，又能兼顧安全與效能。&lt;/li&gt;&lt;li&gt;輕量級工具 - 追求快速開發解決問題，能在時間與資源的各種限制下完成開發需求。&lt;/li&gt;&lt;/ol&gt;&lt;br /&gt;&lt;p&gt;區分兩個工具的關鍵，在於工具的粒度，那麼粒度的粗細怎麼衡量：&lt;/p&gt;&lt;ol&gt;&lt;li&gt;工具的對象 - 細粒度的工具以單一對象為主&lt;/li&gt;&lt;li&gt;工具的解耦模式 - 細粒度的工具以相依性注入（Dependency Injection, DI）方式解耦&lt;/li&gt;&lt;li&gt;工具對運行環境的需求 - 細粒度的工具使得工具和使用工具的環境沒有太大的關聯，易於插拔（Running Anywhere）&lt;/li&gt;&lt;li&gt;運行環境對工具的控制 - 細粒度的工具提供反向控制（Inversion of Control, IoC）讓運行環境可以管理工具&lt;/li&gt;&lt;li&gt;工具啟動所需的資源 - 細粒度的工具不需要加載過多的依賴來啟動。&lt;/li&gt;&lt;li&gt;工具的侵入性 - 細粒度的工具不會過度要求開發者套用特定框架的類（Class），以免難以測試。&lt;/li&gt;&lt;li&gt;工具運行的生命週期 - 細粒度的工具運行時，生命週期會十分清楚，使得容易組合工具到更大的系統。&lt;/li&gt;&lt;/ol&gt;&lt;br /&gt;&lt;p&gt;重量級工具原則上應該是也要具備輕量級工具的優勢，然而往往：&lt;/p&gt;&lt;ol&gt;&lt;li&gt;佈署流程複雜，系統運行緩慢&lt;/li&gt;&lt;li&gt;系統內在彼此太多互相依賴，啟動時間長&lt;/li&gt;&lt;li&gt;系統需要設定好許多規則才能運行，自由空間小&lt;/li&gt;&lt;li&gt;難以除錯（Bebug）&lt;/li&gt;&lt;/ol&gt;&lt;br /&gt;&lt;p&gt;因此也有一說是，輕量級工具並非是對重量級工具的否定，而是一個互補的關係。此外，輕量級工具多數也是開放原始碼的專案，利於跨專案整合並快速開發，儘管如此，輕量級工具仍然有些缺點，例如太過考慮短期的需求，導致長期下來最終要大量的修正、重構與優化。&lt;/p&gt;&lt;br /&gt;&lt;p&gt;對於這一點，至少在自己工作上目前就是盡可能地把技術債，在研究部門和開發部門兩者之間去做平衡，不要讓開發部門拿到設計圖想死、也不讓研究部門處處受開發限制想撞牆。&lt;/p&gt;&lt;p&gt;&lt;hr/&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;自己的功課&quot;&gt;&lt;/a&gt;自己的功課&lt;/h3&gt;&lt;h4&gt;&lt;a name=&quot;dependency&amp;#95;injection&quot;&gt;&lt;/a&gt;Dependency Injection&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;閱讀 &lt;a href='http://huan-lin.blogspot.com/2011/10/dependency-injection-1.html'&gt;Dependency Injection 筆記&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://jaceju.net/2014-07-27-php-di-container/'&gt;理解 Dependency Injection 實作原理&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://computer.jges.mlc.edu.tw/index.php/zend-framework-2/76-di-dependency-injection'&gt;DI(Dependency Injection)&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://ithelp.ithome.com.tw/articles/10141708'&gt;相依性注入(Dependency Injection)的一點點心得&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://blog.rangilin.idv.tw/dependency-injection/'&gt;Dependency Injection&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://openhome.cc/Gossip/SpringGossip/DI.html'&gt;Dependency Injection&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://blog.xuite.net/snowtech/blog/204127986-Dependency+Injection'&gt;Dependency Injection&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://garyliutw.blogspot.tw/2013/06/ioc-dependency-injection_27.html'&gt;轉載 IoC 容器和 Dependency Injection 模式&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://mmpud.logdown.com/posts/210242-dependency-injection'&gt;General Dependency Injection&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://abgne.tw/angularjs/angularjs-getting-stared/inject.html'&gt;AngularJS 入門教學 - $inject&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;h4&gt;&lt;a name=&quot;inversion&amp;#95;of&amp;#95;control&quot;&gt;&lt;/a&gt;Inversion of Control&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;閱讀 &lt;a href='https://www.wikiwand.com/zh-tw/%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC'&gt;控制反轉&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='https://dotblogs.com.tw/joysdw12/archive/2012/11/26/85081.aspx'&gt;.NET 實作工廠模式、 IoC (Inversion of Control) 與 DI (Depedency Injection)&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://blog.developer.idv.tw/2014/05/ioc-di.html'&gt;IOC 控制反轉 &amp; DI 依賴注入&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://openhome.cc/Gossip/SpringGossip/IOC.html'&gt;Inversion of Control&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://sunskynote.blogspot.tw/2016/01/inversion-of-control.html'&gt;Inversion of Control 控制反轉&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://ithelp.ithome.com.tw/articles/10156571'&gt;IoC基本概念介紹&lt;/a&gt;&lt;/li&gt;&lt;li&gt;閱讀 &lt;a href='http://www.petekcchen.com/2011/04/inversion-of-control-pattern.html'&gt;可抽換元件設計模式 - IoC Pattern&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt; &lt;br/&gt;&lt;/p&gt;
 </description>
+<enclosure>
+
+</enclosure>
 <pubDate>
 Tue, 01 Nov 2016 00:00:00 +0800
 </pubDate>
-<author>
-fatfingererr
-</author>
 </item>
 <item>
 <guid>
-fatfingererr.github.io/posts/2016-10-30-以cryogen搭建個人部落格.html
+fatfingererr.github.io/posts-output/2016-10-30-以cryogen搭建個人部落格/
 </guid>
 <link>
-fatfingererr.github.io/posts/2016-10-30-以cryogen搭建個人部落格.html
+fatfingererr.github.io/posts-output/2016-10-30-以cryogen搭建個人部落格/
 </link>
 <title>
 以 cryogen 搭建個人部落格
@@ -299,14 +296,14 @@ lein ring server
  :keep-files       &amp;#91;&amp;quot;.git&amp;quot;&amp;#93;
  :disqus?          true
  :disqus-shortname &amp;quot;fatfingererr&amp;quot; }
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; 基本上就和字面上的意思一樣，你可以根據你的需求修改，需要特別注意的是：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;:post-date-format&lt;/code&gt; 指的是你的每一篇部落格文章的標題要記得打的日期前餟的格式，打錯格式會無法轉 md 至 html&lt;/li&gt;&lt;li&gt;&lt;code&gt;:resources&lt;/code&gt; 包含的檔案才會從 &lt;code&gt;templates&lt;/code&gt; 轉到 &lt;code&gt;public&lt;/code&gt; 資料夾，像我有自己的圖示 &lt;code&gt;favicon.ico&lt;/code&gt; ，就要這樣子&lt;/li&gt;&lt;li&gt;我在 &lt;code&gt;:resources&lt;/code&gt; 中也包含了 &lt;code&gt;images&lt;/code&gt; 的原因，是因為部落格文章要用到的圖片我就用相對位址於文章中引用&lt;ul&gt;&lt;li&gt;例如：&lt;code&gt;&amp;lt;img src=&amp;quot;../images/cryogen-repo-struct.png&amp;quot; width=&amp;quot;100%&amp;quot;&amp;gt;&lt;/code&gt; 這樣&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; 基本上就和字面上的意思一樣，你可以根據你的需求修改，需要特別注意的是：&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;:post-date-format&lt;/code&gt; 指的是你的每一篇部落格文章的標題要記得打的日期前餟的格式，打錯格式會無法轉 md 至 html&lt;ul&gt;&lt;li&gt;&lt;code&gt;:resources&lt;/code&gt; 包含的檔案才會從 &lt;code&gt;templates&lt;/code&gt; 轉到 &lt;code&gt;public&lt;/code&gt; 資料夾，像我有自己的圖示 &lt;code&gt;favicon.ico&lt;/code&gt; ，就要這樣子&lt;/li&gt;&lt;li&gt;我在 &lt;code&gt;:resources&lt;/code&gt; 中也包含了 &lt;code&gt;images&lt;/code&gt; 的原因，是因為部落格文章要用到的圖片我就用相對位址於文章中引用&lt;ul&gt;&lt;li&gt;例如：&lt;code&gt;&amp;lt;img src=&amp;quot;../images/cryogen-repo-struct.png&amp;quot; width=&amp;quot;100%&amp;quot;&amp;gt;&lt;/code&gt; 這樣&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;
 </description>
+<enclosure>
+
+</enclosure>
 <pubDate>
 Sun, 30 Oct 2016 00:00:00 +0800
 </pubDate>
-<author>
-fatfingererr
-</author>
 </item>
 </channel>
 </rss>

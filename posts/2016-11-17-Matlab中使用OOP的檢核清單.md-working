@@ -1,0 +1,38 @@
+{:title "Matlab 中使用 OOP 的檢核清單"
+ :layout :post
+ :tags  ["clojure" "neural network" "clojure for machine learning"]
+ :toc false}
+
+
+ ## properties
+
+- 【　】constant properties & depedenct properties 在儲存為 MAT 檔案時不會存入
+	<br/>　　　　解決方案：自定義 saveobj / loadobj 的 method （請跳至 XXX）
+- 【　】重要的 method 是否有設定 disp 顯示方法所屬的 class（例如：`disp('xxxx supper/sub called.')`）
+- 【　】properties 是否有設定預設值（default value）
+- 【　】constructor 是否有設定初始值（init value）
+- 【　】constructor 是否有設定缺省處理分支（nargin == 0）
+- 【　】constructor 不設定缺省處理分支，是否願意接受預設構造函數（default constructor）
+- 【　】constructor 是否有設定可能參數樹目的對應處理分支（nargin == N）
+- 【　】classdef 是否設定為 handle 類，否則預設是 value 類
+- 【　】classdef 是否為基類（base class）且類名有設定後綴（xxxxBase ）
+- 【　】classdef 多重繼承表示是否以＆分隔（`classdef xxx < YYY & ZZZ`）
+- 【　】兩種聚類關係是否處理得當：Compisiition（黑菱形） Aggregation （白菱形）
+- 【　】Handle 類是否有設定 set / get 作為中間層：(1) 中間層可記錄 set/get 的 log (2) 中間層可設定驗證機制
+- 【　】depedenct properties 是否有對應的 get （應該要一起設計）
+- 【　】hidden properties 是否有以 get 做好向後兼容
+- 【　】set / get 可能有時間成本，記得寫測試要做紀錄
+- 【　】private properties 中的 var 是否有設定獨立後綴（XXX_private）
+- 【　】properties 是否要更細膩的設定給值權限與查詢權限（SetAccess / Get Access）
+- 【　】`GetAccess = public` 沒有必要請刪除
+- 【　】delete / set / get 與靜態方法（static）一定要放在 constructor 裡面
+- 【　】確認類目錄中每個獨立函數都有在 constructor 中做到 declaration 
+- 【　】類中可以定義 local function 以前綴 `localxxx`或後綴`xxxUtility`命名
+- 【　】調用繼承超類的函數是否在 package 中，要記得以 dot 方法來調用	
+- 【　】基礎運算（`plus/sum...etc`）在 class 中應該返回新實例（newobj）
+
+
+
+## TODO
+ - 可以把對應的例子寫成 gist
+

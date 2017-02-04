@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>fatfingererr Blog: 以 cryogen 搭建個人部落格</title>
+
+  <!-- Bootstrap Core CSS -->
+  <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+  <!-- Custom CSS -->
+  <link href="/css/clean-blog.css" rel="stylesheet" type="text/css" />
+
+  <!-- Custom Fonts -->
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'> -->
+  <link href='//fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700italic,700' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Noto+Sans:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'> -->
+  <!--<link href='http://fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700' rel='stylesheet'
+        type='text/css'>-->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/default.min.css">
+
+
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
+  <script type="text/javascript">
+    window.cookieconsent_options = {"message":"This website uses cookies to ensure you get the best experience on our website","dismiss":"Got it!","learnMore":"More info","link":"https://silktide.com/privacy-policy/","theme":"dark-bottom"};
+  </script>
+
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/1.0.9/cookieconsent.min.js"></script>
+  <!-- End Cookie Consent plugin -->
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">fatfingererr Blog</a>
+      </div>
+
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+        　<li ><a href="/"><i class="fa fa-lg fa-home"></i></a></li>
+        　<li ><a href="/archives/">文章</a></li>
+          
+          <li >
+            <a href="/pages-output/about/">關於</a>
+          </li>
+          
+          <li >
+            <a href="/pages-output/series/">筆記</a>
+          </li>
+          
+          <li >
+            <a href="/pages-output/gratitude/">感謝</a>
+          </li>
+          
+          <li><a href="/feed.xml"><i class="fa fa-lg fa-rss"></i></a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+  </nav>
+
+  <!-- Page Header -->
+  <!-- Set your background image for this header on the line below. -->
+  
+  <header class="intro-header hidden-print"
+          style="background-image: url('/img/home-bg-2.jpg')" >
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+          <div class="site-heading">
+            <h1>樓門五三桐</h1>
+            <hr>
+            <span class="subheading">「勇氣之中自有魔法、力量與才具。」 — 歌德</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+
+  <!-- Post Content -->
+  <article>
+    <div class="container">
+      <div class="row">
+
+        
+
+<div class="col-sm-9 col-xs-12" id="main-content">
+
+  <span id="sidebar-toggle" class="hidden-print sidebar-toggle"></span>
+
+  <div id="content">
+    
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6"> 2016 年 10 月 30 日</div>
+        
+    </div>
+    <h2>以 cryogen 搭建個人部落格</h2>
+</div>
+<div>
+    
+    <p><br/></p><p>首先至 <a href='http://cryogenweb.org/'>cryogen</a> 的 <a href='https://github.com/cryogen-project/cryogen'>GitHub repo</a>，從 README 中的 <a href='https://github.com/cryogen-project/cryogen/blob/master/README.md#some-sites-made-with-cryogen'>Some Sites Made With Cryogen</a> 中挑選一個喜歡的主題</p><p>你很快會發現許多人的樣式都很類似，那是 cryogen 的預設模板，而本部落格使用的是 <a href='http://tangrammer.github.io/'>on the clojure move</a> 的模板</p><p>你可以至 <a href='https://github.com/tangrammer/cryogen-blog'>on the clojure move 的 Github repo</a> 複製一份為自己所用，或是到 <a href='https://github.com/fatfingererr/cryogen-blog'>我的 Github repo</a> 複製一份中文的</p><p>我也是以該模板簡單微調，都沒有關係</p><p><br/></p><h3><a name="clone&#95;完整的&#95;cryogen&#95;repo&#95;到電腦中"></a>clone 完整的 cryogen repo 到電腦中</h3><pre><code>git clone https://github.com/fatfingererr/cryogen-blog.git
+cd cryogen-blog
+lein ring server
+</code></pre><p>接著打開 <a href='http://localhost:3000/'>http://localhost:3000/</a> 就可以看到部落格樣板在自己電腦中運行的樣子</p><p><img src="../images/cryogen-repo-struct.png" width="100%"></p><p><br/><h3><a name="cryogen-blog&#95;專案資料夾架構"></a>cryogen-blog 專案資料夾架構</h3></p><p>我們比較常用到的是 <code>resources</code> 資料夾，主要是對 blog 的文章與頁面進行新增與修改</p><p>因為整個 blog 的 clojure 運作模式已大抵完成，關於 clojure 的部分我們比較少會去動到</p><p>在 <code>resources</code> 資料夾底下分別有兩個資料夾：</p><ul><li><code>public</code> - 靜態網頁放的地方，也是整個要作為 blog 內容上傳的資料夾</li><li><code>templates</code> - 所有的新增與修改都要在這個資料夾，透過 <code>lein ring server</code> 將 blog 更新至 <code>public</code> 後上傳</li></ul><p><br/><h3><a name="控制中心：config.edn"></a>控制中心：config.edn</h3></p><p><code>config.edn</code> 檔案在 <code>resources/templates/</code> 底下，內容為：</p><pre><code>{:site-title       &quot;Fat Finger ERR&quot;
+ :author           &quot;fatfingererr&quot;
+ :description      &quot;fatfingererr blog&quot;
+ :site-url         &quot;fatfingererr.github.io&quot;
+ :post-root        &quot;posts&quot;
+ :tag-root         &quot;tags&quot;
+ :page-root        &quot;pages&quot;
+ :blog-prefix      &quot;&quot;
+ :rss-name         &quot;feed.xml&quot;
+ :recent-posts     5
+ :post-date-format &quot;yyyy-MM-dd&quot;
+ :sass-src         nil
+ :sass-dest        nil
+ :resources        &#91;&quot;css&quot; &quot;js&quot; &quot;images&quot; &quot;404.html&quot; &quot;README.md&quot; &quot;favicon.ico&quot; &quot;keybase.txt&quot;&#93;
+ :keep-files       &#91;&quot;.git&quot;&#93;
+ :disqus?          true
+ :disqus-shortname &quot;fatfingererr&quot; }
+</code></pre><p> 基本上就和字面上的意思一樣，你可以根據你的需求修改，需要特別注意的是：</p><ul><li><code>:post-date-format</code> 指的是你的每一篇部落格文章的標題要記得打的日期前餟的格式，打錯格式會無法轉 md 至 html<ul><li><code>:resources</code> 包含的檔案才會從 <code>templates</code> 轉到 <code>public</code> 資料夾，像我有自己的圖示 <code>favicon.ico</code> ，就要這樣子</li><li>我在 <code>:resources</code> 中也包含了 <code>images</code> 的原因，是因為部落格文章要用到的圖片我就用相對位址於文章中引用<ul><li>例如：<code>&lt;img src=&quot;../images/cryogen-repo-struct.png&quot; width=&quot;100%&quot;&gt;</code> 這樣</li></ul></li></ul></li></ul><p><br/></p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/cryogen/">cryogen</a>
+    
+    <a href="/tags-output/clojure/">clojure</a>
+    
+</div>
+
+
+    <div id="prev-next" class="hidden-print">
+        
+        <a href="/posts-output/2016-11-01-初探輕量級工具/">&laquo; 關於輕量級工具</a>
+        
+        
+    </div>
+
+    
+
+
+</div>
+
+  </div>
+
+</div>
+<div class="col-sm-3 hidden-xs" id="sidebar">
+
+  <img src="/img/bio-photo.jpg" class="img-responsive img-circle" alt="Mug Shot" style="max-width:120px;">
+  <ul class="post-list">
+    <li>
+      <span class="entry-bio">
+        fatfingererr (Ricky)<br>
+        FX quant , math geek , philosophy lover
+      </span>
+    </li>
+  </ul>
+  <div id="recent">
+    <h2 class="post-title">近期</h2>
+    <ul class="post-list">
+      
+      <li><a href="/posts-output/2016-11-15-類神經網路的設計模式/" class="no-underline">類神經網路的設計模式</a></li>
+      
+      <li><a href="/posts-output/2016-11-12-LISP語言的初探索-1/" class="no-underline">LISP語言的個人初探索（一）</a></li>
+      
+      <li><a href="/posts-output/2016-11-11-KKT條件於初始化權重之應用/" class="no-underline">KKT條件於初始化權重之應用</a></li>
+      
+      <li><a href="/posts-output/2016-11-09-關於暗知識_Dark_Knownledge/" class="no-underline">關於暗知識 Dark Knownledge</a></li>
+      
+      <li><a href="/posts-output/2016-11-07-萬事皆可弊_狄雷克雷分布於資料預處理的運用/" class="no-underline">萬事皆可弊：狄雷克雷分布於資料預處理的運用</a></li>
+      
+    </ul>
+  </div>
+  <div id="recent">
+    <h2 class="post-title">標籤</h2>
+    <ul class="post-list">
+      
+      <li><a href="/tags-output/" class="no-underline"></a></li>
+      
+      <li><a href="/tags-output/cryogen/" class="no-underline">cryogen</a></li>
+      
+      <li><a href="/tags-output/clojure/" class="no-underline">clojure</a></li>
+      
+      <li><a href="/tags-output/heuristic/" class="no-underline">heuristic</a></li>
+      
+      <li><a href="/tags-output/boot/" class="no-underline">boot</a></li>
+      
+      <li><a href="/tags-output/neural network/" class="no-underline">neural network</a></li>
+      
+      <li><a href="/tags-output/Lie algebra/" class="no-underline">Lie algebra</a></li>
+      
+      <li><a href="/tags-output/lightweight/" class="no-underline">lightweight</a></li>
+      
+      <li><a href="/tags-output/preprocessing/" class="no-underline">preprocessing</a></li>
+      
+      <li><a href="/tags-output/lisp/" class="no-underline">lisp</a></li>
+      
+      <li><a href="/tags-output/bayesian/" class="no-underline">bayesian</a></li>
+      
+      <li><a href="/tags-output/finance/" class="no-underline">finance</a></li>
+      
+      <li><a href="/tags-output/data/" class="no-underline">data</a></li>
+      
+    </ul>
+  </div>
+  <!--
+  
+  <div id="tags">
+    <h2 class="post-title">Tags</h2>
+    <ul class="post-list">
+      
+      <li><a href="/tags-output/" class="no-underline"></a></li>
+      
+      <li><a href="/tags-output/cryogen/" class="no-underline">cryogen</a></li>
+      
+      <li><a href="/tags-output/clojure/" class="no-underline">clojure</a></li>
+      
+      <li><a href="/tags-output/heuristic/" class="no-underline">heuristic</a></li>
+      
+      <li><a href="/tags-output/boot/" class="no-underline">boot</a></li>
+      
+      <li><a href="/tags-output/neural network/" class="no-underline">neural network</a></li>
+      
+      <li><a href="/tags-output/Lie algebra/" class="no-underline">Lie algebra</a></li>
+      
+      <li><a href="/tags-output/lightweight/" class="no-underline">lightweight</a></li>
+      
+      <li><a href="/tags-output/preprocessing/" class="no-underline">preprocessing</a></li>
+      
+      <li><a href="/tags-output/lisp/" class="no-underline">lisp</a></li>
+      
+      <li><a href="/tags-output/bayesian/" class="no-underline">bayesian</a></li>
+      
+      <li><a href="/tags-output/finance/" class="no-underline">finance</a></li>
+      
+      <li><a href="/tags-output/data/" class="no-underline">data</a></li>
+      
+    </ul>
+  </div>
+  
+-->
+
+</div>
+
+
+
+      </div>
+    </div>
+  </article>
+
+  <hr>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+          <ul class="list-inline text-center hidden-print">
+            <li>
+              <a href="http://twitter.com/fatfingererr" target="_blank">
+                <span class="fa-stack fa-lg">
+                  <i class="fa fa-circle fa-stack-2x"></i>
+                  <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="http://facebook.com/fatfingererr" target="_blank">
+                <span class="fa-stack fa-lg">
+                  <i class="fa fa-circle fa-stack-2x"></i>
+                  <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="http://github.com/fatfingererr" target="_blank">
+                <span class="fa-stack fa-lg">
+                  <i class="fa fa-circle fa-stack-2x"></i>
+                  <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                </span>
+              </a>
+            </li>
+          </ul>
+          <p class="copyright text-muted">Copyright &copy; 2017 <a href="http://github.com/fatfingererr">fatfingererr</a>.&nbsp;
+          網站由 <a href="http://cryogenweb.org">Cryogen</a> 強力驅動</p>
+
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <!--<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>-->
+
+  <!-- Bootstrap Core JavaScript -->
+  <script src="/js/bootstrap.min.js" type="text/javascript"></script>
+
+  <!-- Custom Theme JavaScript -->
+  <script src="/js/clean-blog.js" type="text/javascript"></script>
+
+  <script src="https://squaresend.com/squaresend.js"></script>
+
+  <script src="/js/highlight.pack.js" type="text/javascript"></script>
+  <!-- <script>hljs.initHighlightingOnLoad();</script> -->
+
+  <script type="text/javascript">
+    hljs.initHighlightingOnLoad();
+  </script>
+
+  <script>
+    sqs_title = "Drop Us a Line!";
+    sqs_subject = "Just wanted to say Hi!"
+    sqs_label_submit = "Send";
+  </script>
+
+  <script>
+    $(document).ready(function() {
+      $("#sidebar-toggle").click(function() {
+        if ($("#sidebar").is(":visible")) {
+          $("#sidebar").fadeOut("fast", function() {
+            $("#main-content").removeClass("col-sm-9").addClass("col-sm-8 col-sm-offset-2");
+            $("#sidebar-toggle").addClass("out");
+          });
+        } else {
+          $("#main-content").removeClass("col-sm-8 col-sm-offset-2").addClass("col-sm-9");
+          $("#sidebar-toggle").removeClass("out");
+          $("#sidebar").fadeIn("fast");
+        }
+      });
+    });
+  </script>
+
+
+</body>
+</html>
