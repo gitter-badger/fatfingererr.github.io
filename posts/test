@@ -1,0 +1,23 @@
+{:title "跳躍連接與網路對稱性"
+ :layout :post
+ :tags  ["neural network" "symmetry"]
+ :toc false}
+
+如果有在關注殘差網路的文章，應該對跳躍連接 (skip connection) 不會太陌生，跳躍連接主要是為了改善深度學習中，各層訊息傳遞受阻的狀況。然而真正的跳躍連接到底扮演什麼角色？本文會來介紹跳躍連結在網路中實際造成的影響，參考自 2017 二月在 arXiv 上的文章 [Skip Connections as Effective Symmetry-Breaking](https://arxiv.org/abs/1701.09175) ，為求簡單理解因此部分內容會簡略表示。
+
+<br/>
+### 網路訓練的鞍形結構 saddle structures
+
+在討論類神經網路的對稱性之前，需要先來介紹一下網路訓練的鞍形結構 (saddle structures) 什麼是網路訓練的鞍形結構呢？這是一個很簡單能理解的觀念，首先我們用梯度下降法來訓練類神經網路，因此誤差在權重參數空間中應該會像一個曲面一樣，然而我們卻會遇到梯度消失的問題，並且我們假設存在一組更好的權重讓誤差還可以更小
+
+<img src="../img/posts/2017-02-07-skip-connections-as-effective-symmetry-breaking/figure-2.png" width="100%">
+
+【鞍形結構】就是指類神經網路中，我們每一層在傳遞訊息時，可能會卡住的原因，就是因為我們把誤差倒傳遞回去到每一層的時候，可能在某一層卡住了，網路權重不再改變並導致誤差無法更小，而這個誤差下不去的原因可能是因為整體網路結構存在鞍點，導致梯度消失，也就是常見的淺層學習速度慢於深層學習速度，只是在此我們不用優化的角度來觀察，而是用對稱與結構的角度來看。
+
+<img src="../img/posts/2017-02-07-skip-connections-as-effective-symmetry-breaking/figure-1.png" width="100%">
+
+我們想要盡可能避免掉訓練過程可能經過鞍點，最好的方式就是打破造成鞍形的訓練結構，跳躍連接實際上就是在打破這個鞍形，透過破壞每一層網路的置換對稱性 (permutation symmetry) 與伸縮對稱性 (rescaling symmetry) 來達到目的，那為什麼破壞這些對稱性就能破壞鞍形呢？後面我們會繼續來探討。
+
+<img src="../img/posts/2017-02-07-skip-connections-as-effective-symmetry-breaking/figure-3.png" width="100%">
+
+
