@@ -1,5 +1,7 @@
 github.com/fatfingererr
 =====================
+
+[![Join the chat at https://gitter.im/fatfingererr-blog/Lobby](https://badges.gitter.im/fatfingererr-blog/Lobby.svg)](https://gitter.im/fatfingererr-blog/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 this is the public repo accesible from [http://www.ffe.tw/](http://www.ffe.tw/)
 
 Blog powered by cryogen is [https://github.com/fatfingererr/cryogen-blog](https://github.com/fatfingererr/cryogen-blog)
